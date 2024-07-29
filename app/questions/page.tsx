@@ -4,7 +4,7 @@ import QuestionCard from "@components/ui/question-card";
 
 const QuestionList = () => {
   return (
-    <div className="grid mt-9 grid-cols-3 gap-8">
+    <div className="grid mt-3 grid-cols-3 gap-6">
       <QuestionCard />
       <QuestionCard />
       <QuestionCard />

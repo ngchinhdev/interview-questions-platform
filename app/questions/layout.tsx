@@ -3,6 +3,13 @@ import React, { ReactNode } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const metadata: Metadata = {
   title: "ReactJS | Questions",
@@ -17,9 +24,28 @@ const QuestionListLayout = ({ children }: { children: ReactNode }) => {
         <br />
         Interview Knowledge and Experience
       </h1>
-      <div className="mt-9 w-[600px] mx-auto flex gap-3">
-        <Input type="text" placeholder="Search questions by tag or username" />
-        <Button variant="outline">Search</Button>
+      <div className="mt-9 w-[700px] mx-auto flex gap-3">
+        <Input
+          type="text"
+          placeholder="Search questions by tag or username"
+          className="h-12 px-6"
+        />
+        <Button variant="default" className="h-12 w-28">
+          Search
+        </Button>
+      </div>
+      <div className="flex items-center mt-5 justify-end">
+        <Select>
+          <SelectTrigger className="w-[110px] focus:ring-0 outline-none h-[35px]">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="questionAsc">Question ascending</SelectItem>
+            <SelectItem value="questionDesc">Question descending</SelectItem>
+            <SelectItem value="dateAsc">Date ascending</SelectItem>
+            <SelectItem value="dateDesc">Date descending</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       {children}
     </>
