@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import logo from "@/public/images/logo.png";
 import { ModeToggle } from "@components/ui/toggle-mode";
 import ContentWrapper from "@components/ui/content-wrapper";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Interview Questions Platform",
@@ -27,10 +28,10 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           <div className="sticky top-0 z-50 w-full border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <ContentWrapper>
               <header className="flex items-center py-2 justify-between">
-                <div>
+                <Link href="/">
                   {/* <Image src={logo} alt="Logo" width={100} height={50} /> */}
                   Logo
-                </div>
+                </Link>
                 <div className="flex items-center gap-3 justify-between">
                   <ModeToggle />
                   <Button variant="outline">Login</Button>

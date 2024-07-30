@@ -10,7 +10,7 @@ interface ModalPreviewProps {
 const ModalPreview = ({ openText }: ModalPreviewProps) => {
   return (
     <Dialog>
-      <DialogTrigger>{openText}</DialogTrigger>
+      <DialogTrigger asChild>{openText}</DialogTrigger>
       <DialogContent className="sm:max-w-[35%] max-h-[90%]">
         <h1 className="text-center font-medium scroll-m-20 text-3xl tracking-tight lg:text-2xl">
           Your Question Will Be Seen Like This
@@ -22,7 +22,7 @@ const ModalPreview = ({ openText }: ModalPreviewProps) => {
           <Button variant="outline" className="me-3">
             Cancel
           </Button>
-          <Button variant="default">Create</Button>
+          <Button variant="default">Agree</Button>
         </div>
       </DialogContent>
     </Dialog>
