@@ -4,11 +4,10 @@ import { ReactNode } from "react";
 import Image from "next/image";
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { Button } from "@/components/ui/button";
 import logo from "@/public/images/logo.png";
-import { ModeToggle } from "@components/ui/toggle-mode";
 import ContentWrapper from "@components/ui/content-wrapper";
 import Link from "next/link";
+import NavHeader from "@components/nav-header";
 
 export const metadata: Metadata = {
   title: "Interview Questions Platform",
@@ -32,10 +31,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                   {/* <Image src={logo} alt="Logo" width={100} height={50} /> */}
                   Logo
                 </Link>
-                <div className="flex items-center gap-3 justify-between">
-                  <ModeToggle />
-                  <Button variant="outline">Login</Button>
-                </div>
+                <NavHeader />
               </header>
             </ContentWrapper>
           </div>

@@ -1,4 +1,12 @@
-import mongoose, { Schema, models, model } from 'mongoose';
+import mongoose, { Schema, models, model, Document, ObjectId } from 'mongoose';
+
+export interface IQuestion extends Document {
+    _id: ObjectId;
+    title: string;
+    author: string;
+    language: string;
+    tags: string[];
+}
 
 const QuestionSchema = new Schema({
     title: {
