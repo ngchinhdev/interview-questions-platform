@@ -1,23 +1,17 @@
 import { ReactNode } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Answer from "./answer";
 
-interface ModalQuestionProps {
-  openText: ReactNode;
-}
+// interface ModalQuestionProps {
+//   open: boolean;
+//   id: string;
+//   onOpenChange: () => void;
+// }
 
-const ModalQuestion = ({ openText }: ModalQuestionProps) => {
+const ModalQuestion = () => {
   return (
-    <Dialog>
-      <DialogTrigger>{openText}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[60%] overflow-y-scroll max-h-[90%]">
         <div className="flex gap-3 items-start">
           <Avatar className="w-8 h-8 mt-1">

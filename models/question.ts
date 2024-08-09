@@ -3,8 +3,8 @@ import mongoose, { Schema, models, model, Document, ObjectId } from 'mongoose';
 export interface IQuestion extends Document {
     _id: ObjectId;
     title: string;
-    author: string;
-    language: string;
+    author: ObjectId;
+    language: ObjectId;
     tags: string[];
 }
 
