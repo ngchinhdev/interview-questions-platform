@@ -1,15 +1,27 @@
+"use client";
+
 import React from "react";
 import { FaRegHeart } from "react-icons/fa";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ModalQuestion from "./modal-question";
 import { IQuestionResponseData } from "@interfaces/question";
+import { useModalQuestion } from "@components/modal-question-provider";
 
 interface IQuestionCardProps {
   questionData: IQuestionResponseData;
 }
 
 const QuestionCard = ({ questionData }: IQuestionCardProps) => {
+  const { onOpenChange, onChangeCurId } = useModalQuestion();
+
+  const handleOpen = (id: string) => {
+    if (!id) return;
+
+    onOpenChange(true);
+    onChangeCurId(id);
+  };
+
   return (
     <div className="bg-background/95 border relative rounded-lg px-4 py-3">
       <div className="flex gap-3 items-center">
@@ -38,7 +50,10 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
         👉{" "}
         <span className="cursor-pointer">
           &nbsp;{" "}
-          <span className="underline">
+          <span
+            className="underline"
+            onClick={() => handleOpen(questionData._id)}
+          >
             {questionData.answers && questionData.answers.length > 1
               ? `và ${questionData.answers.length - 1} câu trả lời khác`
               : "Xem chi tiết"}

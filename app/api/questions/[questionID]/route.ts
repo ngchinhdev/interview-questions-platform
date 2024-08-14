@@ -17,11 +17,17 @@ export const GET = async (req: Request, context: any) => {
                 isDeleted: false,
                 _id: questionID
             })
-            .populate('author');
+            .populate({
+                path: 'author',
+                select: "username email image"
+            });
 
         const answers = await Answer
             .find({ question: questionID })
-            .populate('author');
+            .populate({
+                path: 'author',
+                select: "username email image"
+            });
 
         if (!question) {
             return NextResponse.json({
@@ -32,7 +38,7 @@ export const GET = async (req: Request, context: any) => {
         return NextResponse.json({
             message: "Question retrieved successfully.",
             data: {
-                question,
+                ...question.toObject(),
                 answers
             }
         }, { status: 200 });

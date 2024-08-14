@@ -1,46 +1,105 @@
-import { ReactNode } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+"use client";
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Answer from "./answer";
+import { useModalQuestion } from "@components/modal-question-provider";
+import { IQuestionResponseData } from "@interfaces/question";
+import { useEffect, useState } from "react";
+import LoadingSpinner from "./loading-spinner";
+import { useQuery } from "@tanstack/react-query";
 
-// interface ModalQuestionProps {
-//   open: boolean;
-//   id: string;
-//   onOpenChange: () => void;
-// }
+const getQuestionByID = async (id: string) => {
+  try {
+    const res = await fetch("http://localhost:9999/api/questions/" + id);
+    console.log(id);
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
 
-const ModalQuestion = () => {
+    const data = await res.json();
+    return data.data as IQuestionResponseData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const ModalQuestionAvailable = () => {
+  const { isOpen, onOpenChange, curId } = useModalQuestion();
+
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   const fetchData = async () => {
+  //     try {
+  //       const data = await getQuestionByID(curId);
+  //       console.log(data);
+  //       setQuestion(data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [curId]);
+
+  const {
+    data: question,
+    isError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["question", curId],
+    queryFn: () => getQuestionByID(curId),
+    enabled: !!curId,
+  });
+
+  if (isError) {
+    return <div>Error</div>;
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[60%] overflow-y-scroll max-h-[90%]">
-        <div className="flex gap-3 items-start">
-          <Avatar className="w-8 h-8 mt-1">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90%] overflow-y-scroll sm:max-w-[60%]">
+        {isLoading ? (
+          <LoadingSpinner className="mx-auto" size={50} />
+        ) : !question ? (
+          <div>Not found</div>
+        ) : (
           <div>
-            <h6 className="text-base flex items-center gap-5 leading-none mb-1">
-              <strong>nguyenchinh</strong>
-              <span className="text-sm">&#x2022; 1 day ago</span>
-            </h6>
-            <strong className="text-lg leading-tight">
-              State và props khác nhau chỗ nào? State và props khác nhau chỗ
-              nào? nào?rops khác nhau chỗ nào? State và props khác nhau chỗ nào?
-              nào?
-            </strong>
+            <div className="flex items-start gap-3">
+              <Avatar className="mt-1 h-8 w-8">
+                <AvatarImage src={question.author.image} />
+                <AvatarFallback>
+                  {question.author.username.slice(0, 2)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
+                  <strong>{question.author.username}</strong>
+                  <span className="text-sm">&#x2022; 1 day ago</span>
+                </h6>
+                <strong className="text-lg leading-tight">
+                  {question.title}
+                </strong>
+              </div>
+            </div>
+            <div className="ps-11">
+              {question.answers.map((a) => (
+                <Answer answer={a} key={a._id} />
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="ps-11">
-          <Answer />
-          <Answer />
-          <Answer />
-          <Answer />
-          <Answer />
-          <Answer />
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );
+};
+
+const ModalQuestion = () => {
+  const { curId } = useModalQuestion();
+
+  return curId && <ModalQuestionAvailable />;
 };
 
 export default ModalQuestion;

@@ -1,13 +1,24 @@
 import "@/styles/global.css";
 import { Metadata } from "next";
 import { ReactNode } from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import logo from "@/public/images/logo.png";
 import ContentWrapper from "@components/ui/content-wrapper";
-import Link from "next/link";
 import NavHeader from "@components/nav-header";
+import { Input } from "@/components/ui/input";
+import { Button } from "@components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import ModalQuestionProvider from "@components/modal-question-provider";
+import Footer from "@components/footer";
+import { ReactQueryProvider } from "@components/react-query-provider";
 
 export const metadata: Metadata = {
   title: "Interview Questions Platform",
@@ -16,7 +27,7 @@ export const metadata: Metadata = {
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body>
         <ThemeProvider
           attribute="class"
@@ -24,18 +35,58 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           enableSystem
           disableTransitionOnChange
         >
-          <div className="sticky top-0 z-50 w-full border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <ReactQueryProvider>
+            <div className="sticky top-0 z-50 w-full border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <ContentWrapper>
+                <header className="flex items-center justify-between py-2">
+                  <Link href="/">
+                    {/* <Image src={logo} alt="Logo" width={100} height={50} /> */}
+                    Logo
+                  </Link>
+                  <NavHeader />
+                </header>
+              </ContentWrapper>
+            </div>
             <ContentWrapper>
-              <header className="flex items-center py-2 justify-between">
-                <Link href="/">
-                  {/* <Image src={logo} alt="Logo" width={100} height={50} /> */}
-                  Logo
-                </Link>
-                <NavHeader />
-              </header>
+              {" "}
+              <ModalQuestionProvider>
+                <h1 className="mx-auto mt-8 w-[80%] scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-4xl">
+                  Explore & Share
+                  <br />
+                  Interview Knowledge and Experience
+                </h1>
+                <div className="mx-auto mt-9 flex w-[700px] gap-3">
+                  <Input
+                    type="text"
+                    placeholder="Search questions by tag or username"
+                    className="h-12 px-6"
+                  />
+                  <Button variant="default" className="h-12 w-28">
+                    Search
+                  </Button>
+                </div>
+                <div className="mt-5 flex items-center justify-end">
+                  <Select>
+                    <SelectTrigger className="h-[35px] w-[110px] outline-none focus:ring-0">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="questionAsc">
+                        Question ascending
+                      </SelectItem>
+                      <SelectItem value="questionDesc">
+                        Question descending
+                      </SelectItem>
+                      <SelectItem value="dateAsc">Date ascending</SelectItem>
+                      <SelectItem value="dateDesc">Date descending</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {children}
+              </ModalQuestionProvider>
+              <Footer />
             </ContentWrapper>
-          </div>
-          <ContentWrapper>{children}</ContentWrapper>
+          </ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>
