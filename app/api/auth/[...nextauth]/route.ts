@@ -3,7 +3,7 @@ import GoogleProvider from 'next-auth/providers/google';
 
 import User from '@models/user';
 import { connectToDB } from '@libs/database';
-console.log(process.env.GOOGLE_ID);
+
 const handler = NextAuth({
     providers: [
         GoogleProvider({
@@ -13,9 +13,9 @@ const handler = NextAuth({
     ],
     callbacks: {
         async session({ session }) {
-            // store the user id from MongoDB to session
             if (session?.user?.email) {
                 const sessionUser = await User.findOne({ email: session.user.email });
+                console.log(sessionUser);
                 session.user.id = sessionUser._id.toString();
             }
 
@@ -23,19 +23,17 @@ const handler = NextAuth({
         },
         async signIn({ account, profile, user, credentials }) {
             try {
+                console.log('pro', profile);
                 await connectToDB();
-                console.log(profile);
-                // // check if user already exists
-                // const userExists = await User.findOne({ email: profile?.email });
+                const userExists = await User.findOne({ email: profile?.email });
 
-                // // if not, create a new document and save user in MongoDB
-                // if (!userExists) {
-                //     await User.create({
-                //         email: profile?.email,
-                //         username: profile?.name?.replace(" ", "").toLowerCase(),
-                //         image: profile?.image,
-                //     });
-                // }
+                if (!userExists) {
+                    await User.create({
+                        email: profile?.email,
+                        username: profile?.name?.replace(" ", "").toLowerCase(),
+                        image: profile?.picture,
+                    });
+                }
 
                 return true;
             } catch (error) {
@@ -43,7 +41,8 @@ const handler = NextAuth({
                 return false;
             }
         },
-    }
+    },
+    secret: process.env.NEXTAUTH_SECRET,
 });
 
 export { handler as GET, handler as POST };

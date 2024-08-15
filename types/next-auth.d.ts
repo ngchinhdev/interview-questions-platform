@@ -5,8 +5,12 @@ declare module "next-auth" {
         user: {
             id: string;
             email: string;
-            name: string;
+            username: string;
             image: string;
         };
+    }
+
+    interface Profile {
+        picture: string;
     }
 }

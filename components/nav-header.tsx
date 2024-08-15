@@ -3,15 +3,28 @@
 import React, { useEffect, useState } from "react";
 import {
   signIn,
+  signOut,
   getProviders,
   LiteralUnion,
   ClientSafeProvider,
+  useSession,
 } from "next-auth/react";
 import { ModeToggle } from "@/components/ui/toggle-mode";
 import { Button } from "@/components/ui/button";
 import { BuiltInProviderType } from "next-auth/providers/index";
+import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 const NavHeader = () => {
+  const { data: session } = useSession();
   const [providers, setProviders] = useState<Record<
     LiteralUnion<BuiltInProviderType, string>,
     ClientSafeProvider
@@ -27,9 +40,29 @@ const NavHeader = () => {
   }, []);
   console.log(providers && Object.values(providers));
   return (
-    <div className="flex items-center gap-3 justify-between">
+    <div className="flex items-center justify-between gap-3">
       <ModeToggle />
-      {providers &&
+
+      {session?.user ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger className="outline-none">
+            <Avatar className="cursor-pointer">
+              <AvatarImage src={session.user.image} />
+              <AvatarFallback>{session.user.username}</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => signOut()}>
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        providers &&
         Object.values(providers).map((provider) => (
           <Button
             key={provider.name}
@@ -38,7 +71,8 @@ const NavHeader = () => {
           >
             Login
           </Button>
-        ))}
+        ))
+      )}
     </div>
   );
 };

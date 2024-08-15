@@ -3,7 +3,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Answer from "./answer";
-import { useModalQuestion } from "@components/modal-question-provider";
+import { useModalQuestion } from "@components/providers/modal-question-provider";
 import { IQuestionResponseData } from "@interfaces/question";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "./loading-spinner";

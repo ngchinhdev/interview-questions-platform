@@ -6,7 +6,6 @@ import Image from "next/image";
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import ContentWrapper from "@components/ui/content-wrapper";
-import NavHeader from "@components/nav-header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@components/ui/button";
 import {
@@ -16,9 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ModalQuestionProvider from "@components/modal-question-provider";
+import ModalQuestionProvider from "@components/providers/modal-question-provider";
 import Footer from "@components/footer";
-import { ReactQueryProvider } from "@components/react-query-provider";
+import { ReactQueryProvider } from "@components/providers/react-query-provider";
+import Header from "@components/header";
+import SSProvider from "@components/providers/session-provider";
 
 export const metadata: Metadata = {
   title: "Interview Questions Platform",
@@ -35,58 +36,56 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           enableSystem
           disableTransitionOnChange
         >
-          <ReactQueryProvider>
-            <div className="sticky top-0 z-50 w-full border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <SSProvider>
+            <ReactQueryProvider>
+              <div className="sticky top-0 z-50 w-full border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <ContentWrapper>
+                  <Header />
+                </ContentWrapper>
+              </div>
               <ContentWrapper>
-                <header className="flex items-center justify-between py-2">
-                  <Link href="/">
-                    {/* <Image src={logo} alt="Logo" width={100} height={50} /> */}
-                    Logo
-                  </Link>
-                  <NavHeader />
-                </header>
+                {" "}
+                <ModalQuestionProvider>
+                  <h1 className="mx-auto mt-8 w-[80%] scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-4xl">
+                    Explore & Share
+                    <br />
+                    Interview Knowledge and Experience
+                  </h1>
+                  <div className="mx-auto mt-9 flex w-[700px] gap-3">
+                    <Input
+                      type="text"
+                      placeholder="Search questions by tag or username"
+                      className="h-12 px-6"
+                    />
+                    <Button variant="default" className="h-12 w-28">
+                      Search
+                    </Button>
+                  </div>
+                  <div className="mt-5 flex items-center justify-end">
+                    <Select>
+                      <SelectTrigger className="h-[35px] w-[110px] outline-none focus:ring-0">
+                        <SelectValue placeholder="Sort by" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="questionAsc">
+                          Question ascending
+                        </SelectItem>
+                        <SelectItem value="questionDesc">
+                          Question descending
+                        </SelectItem>
+                        <SelectItem value="dateAsc">Date ascending</SelectItem>
+                        <SelectItem value="dateDesc">
+                          Date descending
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {children}
+                </ModalQuestionProvider>
+                <Footer />
               </ContentWrapper>
-            </div>
-            <ContentWrapper>
-              {" "}
-              <ModalQuestionProvider>
-                <h1 className="mx-auto mt-8 w-[80%] scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-4xl">
-                  Explore & Share
-                  <br />
-                  Interview Knowledge and Experience
-                </h1>
-                <div className="mx-auto mt-9 flex w-[700px] gap-3">
-                  <Input
-                    type="text"
-                    placeholder="Search questions by tag or username"
-                    className="h-12 px-6"
-                  />
-                  <Button variant="default" className="h-12 w-28">
-                    Search
-                  </Button>
-                </div>
-                <div className="mt-5 flex items-center justify-end">
-                  <Select>
-                    <SelectTrigger className="h-[35px] w-[110px] outline-none focus:ring-0">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="questionAsc">
-                        Question ascending
-                      </SelectItem>
-                      <SelectItem value="questionDesc">
-                        Question descending
-                      </SelectItem>
-                      <SelectItem value="dateAsc">Date ascending</SelectItem>
-                      <SelectItem value="dateDesc">Date descending</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {children}
-              </ModalQuestionProvider>
-              <Footer />
-            </ContentWrapper>
-          </ReactQueryProvider>
+            </ReactQueryProvider>
+          </SSProvider>
         </ThemeProvider>
       </body>
     </html>
