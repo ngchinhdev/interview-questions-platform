@@ -22,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import Link from "next/link";
 
 const NavHeader = () => {
   const { data: session } = useSession();
@@ -43,36 +44,43 @@ const NavHeader = () => {
     <div className="flex items-center justify-between gap-3">
       <ModeToggle />
 
-      {session?.user ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none">
-            <Avatar className="cursor-pointer">
-              <AvatarImage src={session.user.image} />
-              <AvatarFallback>{session.user.username}</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut()}>
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
-        providers &&
-        Object.values(providers).map((provider) => (
-          <Button
-            key={provider.name}
-            onClick={() => signIn(provider.id)}
-            variant="outline"
-          >
-            Login
+      <>
+        {session?.user && (
+          <Button asChild variant="link">
+            <Link href="/create-question">Create Question</Link>
           </Button>
-        ))
-      )}
+        )}
+        {session?.user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="outline-none">
+              <Avatar className="cursor-pointer">
+                <AvatarImage src={session.user.image} />
+                <AvatarFallback>{session.user.username}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => signOut()}>
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          providers &&
+          Object.values(providers).map((provider) => (
+            <Button
+              key={provider.name}
+              onClick={() => signIn(provider.id)}
+              variant="outline"
+            >
+              Login
+            </Button>
+          ))
+        )}
+      </>
     </div>
   );
 };

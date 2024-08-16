@@ -1,6 +1,6 @@
-import { Link } from "lucide-react";
 import React from "react";
 import NavHeader from "./nav-header";
+import Link from "next/link";
 
 const Header = () => {
   return (

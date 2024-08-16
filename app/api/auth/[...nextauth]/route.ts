@@ -1,10 +1,10 @@
-import NextAuth from 'next-auth';
+import NextAuth, { AuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
 import User from '@models/user';
 import { connectToDB } from '@libs/database';
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_ID!,
@@ -16,7 +16,12 @@ const handler = NextAuth({
             if (session?.user?.email) {
                 const sessionUser = await User.findOne({ email: session.user.email });
                 console.log(sessionUser);
-                session.user.id = sessionUser._id.toString();
+                session.user = {
+                    id: sessionUser._id.toString(),
+                    username: sessionUser.username,
+                    image: sessionUser.image,
+                    email: sessionUser.email
+                };
             }
 
             return session;
@@ -43,6 +48,8 @@ const handler = NextAuth({
         },
     },
     secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

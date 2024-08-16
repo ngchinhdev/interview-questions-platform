@@ -4,7 +4,6 @@ export interface IQuestion extends Document {
     _id: ObjectId;
     title: string;
     author: ObjectId;
-    language: ObjectId;
     tags: string[];
 }
 
@@ -16,11 +15,6 @@ const QuestionSchema = new Schema({
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
-    },
-    language: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Language',
         required: true
     },
     tags: [String],

@@ -1,14 +1,13 @@
 import { connectToDB } from "@libs/database";
 import { checkValidExistID } from "@libs/helper";
-import Language from "@models/language";
 import Question from "@models/question";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
-    const { title, authorID: author, languageID: language, tags } = await req.json();
-    console.log(title, author, language, tags);
-    if (!title || !author || !language || !Array.isArray(tags) || !tags.length) {
+    const { title, authorID: author, tags } = await req.json();
+    console.log(title, author, tags);
+    if (!title || !author || !Array.isArray(tags) || !tags.length) {
         return NextResponse.json({
             message: "Missing required fields."
         }, { status: 400 });
@@ -16,13 +15,11 @@ export const POST = async (req: Request) => {
 
     try {
         await connectToDB();
-        // await checkValidExistID(author, User);
-        await checkValidExistID(language, Language);
+        await checkValidExistID(author, User);
 
         const newQuestion = await Question.create({
             title,
             author,
-            language,
             tags
         });
 

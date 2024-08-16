@@ -9,10 +9,9 @@ export interface IQuestionResponseData {
         email: string;
         image: string;
     };
-    language: string;
     createdAt: string;
     updatedAt: string;
-    answers: IAnswer[];
+    answers?: IAnswer[];
 }
 
 export interface IAnswer {

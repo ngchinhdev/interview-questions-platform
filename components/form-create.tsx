@@ -7,10 +7,19 @@ import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
 import ModalPreview from "@components/ui/modal-preview";
 import { Textarea } from "@components/ui/textarea";
-import { IQuestion } from "@models/question";
+import { useSession } from "next-auth/react";
+import { IQuestionResponseData } from "@interfaces/question";
 
 const FormCreate = () => {
   const [tags, setTags] = useState<string[]>([]);
+  const [statePreview, setStatePreview] = useState<{
+    isOpen: boolean;
+    previewData: IQuestionResponseData | undefined;
+  }>({
+    isOpen: false,
+    previewData: undefined,
+  });
+  const { data: session } = useSession();
   const tagRef = useRef<HTMLInputElement>(null);
   const questionRef = useRef<HTMLTextAreaElement>(null);
   const answerRef = useRef<HTMLTextAreaElement>(null);
@@ -20,48 +29,52 @@ const FormCreate = () => {
       return;
     }
 
-    if (
-      !questionRef.current.value ||
-      !answerRef.current.value ||
-      !tags.length
-    ) {
+    if (!session?.user || !questionRef.current.value || !tags.length) {
       alert("Thieu");
       return;
     }
 
-    const response = await fetch("http://localhost:9999/api/questions/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        authorID: "66acba134295f03261880db4",
-        languageID: "66a8852230a52d40386dfd81",
-        title: questionRef.current.value,
-        tags,
-      }),
-    });
-
-    const data = await response.json();
-
-    const responseAnswer = await fetch(
-      "http://localhost:9999/api/answers/create",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/questions/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            authorID: session.user.id,
+            title: questionRef.current.value,
+            tags,
+          }),
         },
-        body: JSON.stringify({
-          authorID: "66acba134295f03261880db4",
-          questionID: data.data._id,
-          content: answerRef.current.value,
-        }),
+      );
+
+      const data = await response.json();
+
+      if (answerRef.current.value) {
+        const responseAnswer = await fetch(
+          "http://localhost:3000/api/answers/create",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              authorID: session.user.id,
+              questionID: data.data._id,
+              content: answerRef.current.value,
+            }),
+          },
+        );
+
+        const newAnswer = await responseAnswer.json();
+
+        console.log(newAnswer);
       }
-    );
-
-    const newAnswer = await responseAnswer.json();
-
-    console.log(newAnswer);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -81,10 +94,59 @@ const FormCreate = () => {
     setTags((prevTags) => prevTags.filter((_, index) => index !== tagIndex));
   };
 
-  const isEmptyValue = () => {
-    return (
-      !questionRef.current?.value || !answerRef.current?.value || !tags.length
-    );
+  const handleResetForm = () => {
+    if (!questionRef.current || !answerRef.current) {
+      return;
+    }
+
+    questionRef.current.value = "";
+    answerRef.current.value = "";
+    setTags([]);
+  };
+
+  const handleSetPreviewData = () => {
+    setStatePreview({
+      isOpen: true,
+      previewData: {
+        _id: "",
+        author: {
+          _id: session!.user.id!,
+          email: session!.user.email!,
+          username: session!.user.username!,
+          image: session!.user.image!,
+        },
+        title: questionRef.current!.value,
+        likes: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        tags,
+        answers: questionRef.current?.value
+          ? [
+              {
+                _id: "",
+                author: {
+                  _id: session!.user.id!,
+                  email: session!.user.email!,
+                  username: session!.user.username!,
+                  image: session!.user.image!,
+                },
+                content: questionRef.current.value,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                dislikes: 0,
+                likes: 0,
+              },
+            ]
+          : [],
+      },
+    });
+  };
+
+  const handleOpenChange = () => {
+    setStatePreview({
+      ...statePreview,
+      isOpen: false,
+    });
   };
 
   return (
@@ -100,9 +162,9 @@ const FormCreate = () => {
           ref={questionRef}
         />
       </div>
-      <div className="grid w-full gap-1.5 mt-3">
+      <div className="mt-3 grid w-full gap-1.5">
         <Label className="text-sm lg:text-lg" htmlFor="answer">
-          Your answer <span className="font-normal text-sm">(Optional)</span>
+          Your answer <span className="text-sm font-normal">(Optional)</span>
         </Label>
         <Textarea
           placeholder="Type your answer here"
@@ -112,20 +174,20 @@ const FormCreate = () => {
           ref={answerRef}
         />
       </div>
-      <div className="grid w-full items-center gap-1.5 mt-3">
+      <div className="mt-3 grid w-full items-center gap-1.5">
         <Label className="text-sm lg:text-lg" htmlFor="tag">
-          Tags <span className="font-normal text-sm">(#reactjs, #nextjs)</span>
+          Tags <span className="text-sm font-normal">(#reactjs, #nextjs)</span>
         </Label>
         <div className="relative">
-          <ul className="absolute h-10 top-0 left-0 flex items-center px-3 w-full gap-3">
+          <ul className="absolute left-0 top-0 flex h-10 w-full items-center gap-3 px-3">
             {tags.map((tag, index) => (
               <li
                 key={index}
-                className="flex items-center bg-red-500 px-2 rounded-md pb-[2px]"
+                className="flex items-center rounded-md bg-red-500 px-2 pb-[2px]"
               >
                 <span
                   onClick={() => handleDeleteTag(index)}
-                  className="inline-block me-2 cursor-pointer"
+                  className="me-2 inline-block cursor-pointer"
                 >
                   x
                 </span>
@@ -138,32 +200,26 @@ const FormCreate = () => {
                 type="text"
                 ref={tagRef}
                 disabled={tags.length === 3}
-                className="w-full border-none outline-none bg-transparent"
+                className="w-full border-none bg-transparent outline-none"
               />
             </li>
           </ul>
           <Input type="text" id="tag" className="pointer-events-none" />
         </div>
       </div>
-      <div className="mt-5 float-end">
-        <Button variant="outline" className="me-3">
-          Cancel
+      <div className="float-end mt-5">
+        <Button variant="outline" className="me-3" onClick={handleResetForm}>
+          Reset
         </Button>
-        {isEmptyValue() ? (
-          <Button variant="default" onClick={onSubmit}>
-            Create
-          </Button>
-        ) : (
-          <ModalPreview
-            openText={<Button variant="default">Create</Button>}
-            onSubmit={onSubmit}
-            data={{
-              question: questionRef.current?.value || "",
-              answer: [answerRef.current?.value || ""],
-              tags: tags,
-            }}
-          />
-        )}
+        <Button variant="default" onClick={handleSetPreviewData}>
+          Create
+        </Button>
+        <ModalPreview
+          isOpen={statePreview.isOpen}
+          onOpenChange={handleOpenChange}
+          onSubmit={onSubmit}
+          questionData={statePreview.previewData!}
+        />
       </div>
     </div>
   );

@@ -35,20 +35,6 @@ export const GET = async () => {
                 }
             },
             {
-                $lookup: {
-                    from: 'Language',
-                    localField: 'language',
-                    foreignField: '_id',
-                    as: 'language'
-                }
-            },
-            {
-                $unwind: {
-                    path: '$language',
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
                 $project: {
                     title: 1,
                     author: {
@@ -56,7 +42,6 @@ export const GET = async () => {
                         email: '$author.email',
                         image: '$author.image'
                     },
-                    language: '$language.name',
                     tags: 1,
                     likes: 1,
                     createdAt: 1,

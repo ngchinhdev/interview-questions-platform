@@ -1,17 +1,23 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Answer from "./answer";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
 import { IQuestionResponseData } from "@interfaces/question";
-import { useEffect, useState } from "react";
+import Answer from "./answer";
 import LoadingSpinner from "./loading-spinner";
-import { useQuery } from "@tanstack/react-query";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 
 const getQuestionByID = async (id: string) => {
   try {
-    const res = await fetch("http://localhost:9999/api/questions/" + id);
+    const res = await fetch("http://localhost:3000/api/questions/" + id);
     console.log(id);
     if (!res.ok) {
       throw new Error("Failed to fetch data");
@@ -26,23 +32,6 @@ const getQuestionByID = async (id: string) => {
 
 const ModalQuestionAvailable = () => {
   const { isOpen, onOpenChange, curId } = useModalQuestion();
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   const fetchData = async () => {
-  //     try {
-  //       const data = await getQuestionByID(curId);
-  //       console.log(data);
-  //       setQuestion(data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [curId]);
 
   const {
     data: question,
@@ -60,6 +49,10 @@ const ModalQuestionAvailable = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <VisuallyHidden.Root>
+        <DialogTitle>Modal</DialogTitle>
+      </VisuallyHidden.Root>
+      <DialogDescription></DialogDescription>
       <DialogContent className="max-h-[90%] overflow-y-scroll sm:max-w-[60%]">
         {isLoading ? (
           <LoadingSpinner className="mx-auto" size={50} />
@@ -84,10 +77,12 @@ const ModalQuestionAvailable = () => {
                 </strong>
               </div>
             </div>
-            <div className="ps-11">
-              {question.answers.map((a) => (
-                <Answer answer={a} key={a._id} />
-              ))}
+            <div className="mt-3 ps-11">
+              {question.answers && question.answers.length
+                ? question.answers?.map((a) => (
+                    <Answer answer={a} key={a._id} />
+                  ))
+                : "Chua ai tra loi"}
             </div>
           </div>
         )}

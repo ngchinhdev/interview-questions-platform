@@ -45,43 +45,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
               </div>
               <ContentWrapper>
                 {" "}
-                <ModalQuestionProvider>
-                  <h1 className="mx-auto mt-8 w-[80%] scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-4xl">
-                    Explore & Share
-                    <br />
-                    Interview Knowledge and Experience
-                  </h1>
-                  <div className="mx-auto mt-9 flex w-[700px] gap-3">
-                    <Input
-                      type="text"
-                      placeholder="Search questions by tag or username"
-                      className="h-12 px-6"
-                    />
-                    <Button variant="default" className="h-12 w-28">
-                      Search
-                    </Button>
-                  </div>
-                  <div className="mt-5 flex items-center justify-end">
-                    <Select>
-                      <SelectTrigger className="h-[35px] w-[110px] outline-none focus:ring-0">
-                        <SelectValue placeholder="Sort by" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="questionAsc">
-                          Question ascending
-                        </SelectItem>
-                        <SelectItem value="questionDesc">
-                          Question descending
-                        </SelectItem>
-                        <SelectItem value="dateAsc">Date ascending</SelectItem>
-                        <SelectItem value="dateDesc">
-                          Date descending
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {children}
-                </ModalQuestionProvider>
+                {children}
                 <Footer />
               </ContentWrapper>
             </ReactQueryProvider>
