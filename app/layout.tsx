@@ -6,16 +6,7 @@ import Image from "next/image";
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import ContentWrapper from "@components/ui/content-wrapper";
-import { Input } from "@/components/ui/input";
-import { Button } from "@components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import ModalQuestionProvider from "@components/providers/modal-question-provider";
+
 import Footer from "@components/footer";
 import { ReactQueryProvider } from "@components/providers/react-query-provider";
 import Header from "@components/header";

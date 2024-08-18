@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
     const { title, authorID: author, tags } = await req.json();
-    console.log(title, author, tags);
+
     if (!title || !author || !Array.isArray(tags) || !tags.length) {
         return NextResponse.json({
             message: "Missing required fields."

@@ -1,14 +1,15 @@
 "use client";
 
-import React, { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import React, { KeyboardEvent, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
-import ModalPreview from "@components/ui/modal-preview";
 import { Textarea } from "@components/ui/textarea";
-import { useSession } from "next-auth/react";
 import { IQuestionResponseData } from "@interfaces/question";
+import ModalPreview from "@components/ui/modal-preview";
+import Tiptap, { ITiptapRef } from "./ui/tiptap";
 
 const FormCreate = () => {
   const [tags, setTags] = useState<string[]>([]);
@@ -22,7 +23,7 @@ const FormCreate = () => {
   const { data: session } = useSession();
   const tagRef = useRef<HTMLInputElement>(null);
   const questionRef = useRef<HTMLTextAreaElement>(null);
-  const answerRef = useRef<HTMLTextAreaElement>(null);
+  const answerRef = useRef<ITiptapRef>(null);
 
   async function onSubmit() {
     if (!questionRef.current || !answerRef.current) {
@@ -52,7 +53,7 @@ const FormCreate = () => {
 
       const data = await response.json();
 
-      if (answerRef.current.value) {
+      if (answerRef.current.editorValue) {
         const responseAnswer = await fetch(
           "http://localhost:3000/api/answers/create",
           {
@@ -63,7 +64,7 @@ const FormCreate = () => {
             body: JSON.stringify({
               authorID: session.user.id,
               questionID: data.data._id,
-              content: answerRef.current.value,
+              content: answerRef.current.editorValue,
             }),
           },
         );
@@ -100,7 +101,7 @@ const FormCreate = () => {
     }
 
     questionRef.current.value = "";
-    answerRef.current.value = "";
+    answerRef.current.clearEditorValue();
     setTags([]);
   };
 
@@ -120,7 +121,7 @@ const FormCreate = () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         tags,
-        answers: questionRef.current?.value
+        answers: answerRef.current?.editorValue
           ? [
               {
                 _id: "",
@@ -130,7 +131,7 @@ const FormCreate = () => {
                   username: session!.user.username!,
                   image: session!.user.image!,
                 },
-                content: questionRef.current.value,
+                content: answerRef.current.editorValue,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 dislikes: 0,
@@ -166,13 +167,14 @@ const FormCreate = () => {
         <Label className="text-sm lg:text-lg" htmlFor="answer">
           Your answer <span className="text-sm font-normal">(Optional)</span>
         </Label>
-        <Textarea
+        {/* <Textarea
           placeholder="Type your answer here"
           className="h-40"
           id="answer"
           name="answer"
           ref={answerRef}
-        />
+        /> */}
+        <Tiptap ref={answerRef} />
       </div>
       <div className="mt-3 grid w-full items-center gap-1.5">
         <Label className="text-sm lg:text-lg" htmlFor="tag">

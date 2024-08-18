@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
 import { IQuestionResponseData } from "@interfaces/question";
-import Answer from "./answer";
+import Answer from "./answer-item";
 import LoadingSpinner from "./loading-spinner";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 

@@ -58,9 +58,6 @@ export const GET = async () => {
             }
         ]);
 
-
-        console.log(questionsWithAnswers);
-
         return NextResponse.json({
             message: "Questions retrieved successfully.",
             data: questionsWithAnswers

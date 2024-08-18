@@ -40,12 +40,18 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
         <span>❓</span>
         <strong className="line-clamp-2">{questionData.title}</strong>
       </h3>
-      <p className="mt-2 flex items-start gap-2 text-[15px] leading-tight">
+      <div className="mt-2 flex items-start gap-2 text-[15px] leading-tight">
         <span>📋</span>
-        <span className="line-clamp-4">
-          {questionData.answers && questionData.answers[0].content}
-        </span>
-      </p>
+        <div
+          className="line-clamp-4"
+          dangerouslySetInnerHTML={{
+            __html:
+              questionData?.answers && questionData.answers[0]?.content
+                ? questionData.answers[0].content
+                : "<p>Chưa có câu trả lời</p>",
+          }}
+        />
+      </div>
       <span className="mt-2 block text-xs">
         👉{" "}
         <span className="cursor-pointer">

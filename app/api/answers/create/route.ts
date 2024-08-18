@@ -8,7 +8,6 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
     const { content, authorID: author, questionID: question } = await req.json();
 
-    console.log(content, author, question);
     if (!content || !author || !question) {
         return NextResponse.json({
             message: "Missing required fields."

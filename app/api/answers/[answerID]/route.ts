@@ -8,8 +8,8 @@ export const GET = async (req: Request, context: any) => {
     const { questionID } = context.params;
 
     try {
-        await checkValidExistID(questionID, Question);
         await connectToDB();
+        await checkValidExistID(questionID, Question);
 
         const question = await Question.findOne({
             isDeleted: false,
