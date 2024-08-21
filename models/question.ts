@@ -18,10 +18,7 @@ const QuestionSchema = new Schema({
         required: true
     },
     tags: [String],
-    likes: {
-        type: Number,
-        default: 0
-    },
+    likes: [mongoose.Schema.Types.ObjectId],
     isDeleted: {
         type: Boolean,
         default: false

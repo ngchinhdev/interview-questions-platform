@@ -17,6 +17,14 @@ import AnswerBox from "./answer-box";
 import { useSession } from "next-auth/react";
 import LoginButton from "./login-button";
 import { Button } from "./button";
+import { EllipsisVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
 
 const getQuestionByID = async (id: string) => {
   try {
@@ -64,21 +72,41 @@ const ModalQuestionAvailable = () => {
           <div>Not found</div>
         ) : (
           <div>
-            <div className="flex items-start gap-3">
-              <Avatar className="mt-1 h-8 w-8">
-                <AvatarImage src={question.author.image} />
-                <AvatarFallback>
-                  {question.author.username.slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
-                  <strong>{question.author.username}</strong>
-                  <span className="text-sm">&#x2022; 1 day ago</span>
-                </h6>
-                <strong className="text-lg leading-tight">
-                  {question.title}
-                </strong>
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-start gap-3">
+                <Avatar className="mt-1 h-8 w-8">
+                  <AvatarImage src={question.author.image} />
+                  <AvatarFallback>
+                    {question.author.username.slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
+                    <strong>{question.author.username}</strong>
+                    <span className="text-sm">&#x2022; 1 day ago</span>
+                  </h6>
+                  <strong className="text-lg leading-tight">
+                    {question.title}
+                  </strong>
+                </div>
+              </div>
+              <div className="pr-11">
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="mr-0 outline-none">
+                    <EllipsisVertical className="cursor-pointer" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {session?.user.id === question.author._id ? (
+                      <>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                      </>
+                    ) : (
+                      <DropdownMenuItem>Report</DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
             <div className="mt-3 ps-11">
@@ -87,10 +115,17 @@ const ModalQuestionAvailable = () => {
                     <Answer answer={a} key={a._id} />
                   ))
                 : "Chua ai tra loi"}
-              {session?.user ? (
-                <AnswerBox />
+              {session?.user &&
+              question.answers?.every(
+                (a) => a.author._id !== session.user.id,
+              ) ? (
+                session.user ? (
+                  <AnswerBox />
+                ) : (
+                  <LoginButton>Đăng nhập để trả lời</LoginButton>
+                )
               ) : (
-                <LoginButton>Đăng nhập để trả lời</LoginButton>
+                ""
               )}
             </div>
           </div>

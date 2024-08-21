@@ -18,7 +18,15 @@ export const GET = async () => {
                 }
             },
             {
-                $match: { 'answers.isDeleted': false }
+                $addFields: {
+                    answers: {
+                        $filter: {
+                            input: '$answers',
+                            as: 'answer',
+                            cond: { $eq: ['$$answer.isDeleted', false] }
+                        }
+                    }
+                }
             },
             {
                 $lookup: {

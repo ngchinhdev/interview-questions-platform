@@ -2,7 +2,7 @@ export interface IQuestionResponseData {
     _id: string;
     title: string;
     tags: string[];
-    likes: number;
+    likes: string[];
     author: {
         _id: string;
         username: string;
@@ -23,8 +23,8 @@ export interface IAnswer {
         email: string;
         image: string;
     };
-    likes: number;
-    dislikes: number;
+    likes: string[];
+    dislikes: string[];
     createdAt: string;
     updatedAt: string;
 }

@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ModalQuestion from "./modal-question";
 import { IQuestionResponseData } from "@interfaces/question";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
+import { useSession } from "next-auth/react";
 
 interface IQuestionCardProps {
   questionData: IQuestionResponseData;
@@ -14,6 +15,7 @@ interface IQuestionCardProps {
 
 const QuestionCard = ({ questionData }: IQuestionCardProps) => {
   const { onOpenChange, onChangeCurId } = useModalQuestion();
+  const { data: session } = useSession();
 
   const handleOpen = (id: string) => {
     if (!id) return;
@@ -76,10 +78,12 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
         </div>
         <div className="flex items-end gap-1">
           <span className="cursor-pointer leading-none">
-            {2 > 0 ? (
-              <FaRegHeart className="inline-block text-red-500" />
-            ) : (
+            {session?.user.id &&
+            questionData.likes.length &&
+            questionData.likes.includes(session.user.id) ? (
               "💖"
+            ) : (
+              <FaRegHeart className="inline-block text-red-500" />
             )}{" "}
           </span>
           <span className="leading-none">{questionData.likes}</span>

@@ -39,9 +39,7 @@ const NavHeader = () => {
                 <AvatarFallback>{session.user.username}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
+            <DropdownMenuContent align="end">
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut()}>

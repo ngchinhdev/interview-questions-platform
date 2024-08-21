@@ -15,14 +15,8 @@ const AnswerSchema = new Schema({
         ref: 'Question',
         required: true
     },
-    likes: {
-        type: Number,
-        default: 0
-    },
-    dislikes: {
-        type: Number,
-        default: 0
-    },
+    likes: [mongoose.Schema.Types.ObjectId],
+    dislikes: [mongoose.Schema.Types.ObjectId],
     isDeleted: {
         type: Boolean,
         default: false
