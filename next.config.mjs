@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin('./i18n/i18n.ts');
 const nextConfig = {
     images: {
         domains: ['dabeng.github.io']
-    }
+    },
 };
 
 export default withNextIntl(nextConfig);

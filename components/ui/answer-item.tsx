@@ -22,7 +22,15 @@ const Answer = ({ answer }: IAnswerProps) => {
             &#x2022; {format.relativeTime(new Date(answer.createdAt))}
           </span>
         </h6>
-        <p className="text-lg leading-tight">{answer.content}</p>
+        <p
+          className="text-lg leading-tight"
+          dangerouslySetInnerHTML={{
+            __html:
+              answer && answer?.content
+                ? answer.content
+                : "<p>Chưa có câu trả lời</p>",
+          }}
+        />
         <div className="mt-2">
           <button
             className={`me-2 rounded-md border border-white px-2 py-1 text-xs transition-all ${

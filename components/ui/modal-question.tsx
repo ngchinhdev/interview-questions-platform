@@ -13,6 +13,10 @@ import { IQuestionResponseData } from "@interfaces/question";
 import Answer from "./answer-item";
 import LoadingSpinner from "./loading-spinner";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import AnswerBox from "./answer-box";
+import { useSession } from "next-auth/react";
+import LoginButton from "./login-button";
+import { Button } from "./button";
 
 const getQuestionByID = async (id: string) => {
   try {
@@ -31,6 +35,7 @@ const getQuestionByID = async (id: string) => {
 
 const ModalQuestionAvailable = () => {
   const { isOpen, onOpenChange, curId } = useModalQuestion();
+  const { data: session } = useSession();
 
   const {
     data: question,
@@ -82,6 +87,11 @@ const ModalQuestionAvailable = () => {
                     <Answer answer={a} key={a._id} />
                   ))
                 : "Chua ai tra loi"}
+              {session?.user ? (
+                <AnswerBox />
+              ) : (
+                <LoginButton>Đăng nhập để trả lời</LoginButton>
+              )}
             </div>
           </div>
         )}
