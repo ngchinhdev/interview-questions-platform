@@ -15,7 +15,6 @@ export const authOptions: AuthOptions = {
         async session({ session }) {
             if (session?.user?.email) {
                 const sessionUser = await User.findOne({ email: session.user.email });
-                console.log(sessionUser);
                 session.user = {
                     id: sessionUser._id.toString(),
                     username: sessionUser.username,
@@ -28,7 +27,6 @@ export const authOptions: AuthOptions = {
         },
         async signIn({ account, profile, user, credentials }) {
             try {
-                console.log('pro', profile);
                 await connectToDB();
                 const userExists = await User.findOne({ email: profile?.email });
 

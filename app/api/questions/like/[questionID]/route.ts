@@ -4,13 +4,13 @@ import Question from "@models/question";
 import User from "@models/user";
 import { NextResponse } from "next/server";
 
-export const POST = async (req: Request, context: any) => {
+export const PATCH = async (req: Request, context: any) => {
     const { authorID } = await req.json();
-    const { questionID } = context.params;
+    const questionID = context.params?.questionID;
 
-    if (!authorID) {
+    if (!authorID || !questionID) {
         return NextResponse.json({
-            message: "Missing author ID fields."
+            message: "Missing required fields."
         }, { status: 400 });
     }
 
@@ -20,7 +20,7 @@ export const POST = async (req: Request, context: any) => {
         await checkValidExistID(questionID, Question);
 
         const updatedLikes = await Question.findByIdAndUpdate(
-            authorID,
+            questionID,
             { $push: { likes: authorID } },
             { new: true }
         );
@@ -39,11 +39,11 @@ export const POST = async (req: Request, context: any) => {
 
 export const DELETE = async (req: Request, context: any) => {
     const { authorID } = await req.json();
-    const { questionID } = context.params;
+    const questionID = context.params?.questionID;
 
-    if (!authorID) {
+    if (!authorID || !questionID) {
         return NextResponse.json({
-            message: "Missing author ID fields."
+            message: "Missing required fields."
         }, { status: 400 });
     }
 
@@ -51,9 +51,8 @@ export const DELETE = async (req: Request, context: any) => {
         await connectToDB();
         await checkValidExistID(authorID, User);
         await checkValidExistID(questionID, Question);
-
         const deletedLikes = await Question.findByIdAndUpdate(
-            authorID,
+            questionID,
             { $pull: { likes: authorID } },
             { new: true }
         );

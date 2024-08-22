@@ -1,27 +1,94 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import ModalQuestion from "./modal-question";
-import { IQuestionResponseData } from "@interfaces/question";
+import {
+  IChangeLikeQuestion,
+  IQuestionResponseData,
+} from "@interfaces/question";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
 import { useSession } from "next-auth/react";
+import { useMutation } from "@tanstack/react-query";
 
 interface IQuestionCardProps {
   questionData: IQuestionResponseData;
 }
 
+const likeQuestionApi = async (likeData: IChangeLikeQuestion) => {
+  try {
+    const res = await fetch(
+      "http://localhost:3000/api/questions/like/" + likeData.questionID,
+      {
+        method: likeData.method,
+        body: JSON.stringify({
+          authorID: likeData.authorID,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const QuestionCard = ({ questionData }: IQuestionCardProps) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [likes, setLikes] = useState(0);
   const { onOpenChange, onChangeCurId } = useModalQuestion();
   const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user && questionData.likes.length) {
+      setIsLiked(questionData.likes.includes(session.user.id));
+    }
+
+    setLikes(questionData.likes.length);
+  }, [questionData.likes, session?.user]);
+
+  const { mutate: likeQuestion } = useMutation({
+    mutationFn: likeQuestionApi,
+    onSuccess(data, variables, context) {
+      isLiked ? setIsLiked(false) : setIsLiked(true);
+      setLikes(data.data.likes.length);
+      console.log(data);
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
+  });
 
   const handleOpen = (id: string) => {
     if (!id) return;
 
     onOpenChange(true);
     onChangeCurId(id);
+  };
+
+  const handleToggleLike = () => {
+    if (!session?.user) {
+      return;
+    }
+
+    if (isLiked) {
+      likeQuestion({
+        authorID: session.user.id,
+        questionID: questionData._id,
+        method: "DELETE",
+      });
+    } else {
+      likeQuestion({
+        authorID: session.user.id,
+        questionID: questionData._id,
+        method: "PATCH",
+      });
+    }
   };
 
   return (
@@ -78,15 +145,16 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
         </div>
         <div className="flex items-end gap-1">
           <span className="cursor-pointer leading-none">
-            {session?.user.id &&
-            questionData.likes.length &&
-            questionData.likes.includes(session.user.id) ? (
-              "💖"
+            {isLiked ? (
+              <span onClick={handleToggleLike}>💖</span>
             ) : (
-              <FaRegHeart className="inline-block text-red-500" />
+              <FaRegHeart
+                className="inline-block text-red-500"
+                onClick={handleToggleLike}
+              />
             )}{" "}
           </span>
-          <span className="leading-none">{questionData.likes}</span>
+          <span className="leading-none">{likes}</span>
         </div>
       </div>
     </div>

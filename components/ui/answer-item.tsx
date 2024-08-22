@@ -1,6 +1,6 @@
 import { useFormatter } from "next-intl";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { IAnswer } from "@interfaces/question";
+import { IAnswer, IQuestionResponseData } from "@interfaces/question";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,14 +10,65 @@ import {
 } from "./dropdown-menu";
 import { EllipsisVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { IChangeLikeAnswer } from "@interfaces/answer";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useModalQuestion } from "@components/providers/modal-question-provider";
 
 interface IAnswerProps {
   answer: IAnswer;
 }
 
+const likeAnswerApi = async (likeData: IChangeLikeAnswer) => {
+  try {
+    const res = await fetch(
+      "http://localhost:3000/api/answers/like/" + likeData.answerID,
+      {
+        method: likeData.method,
+        body: JSON.stringify({
+          authorID: likeData.authorID,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await res.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const dislikeQuestionApi = async (likeData: IChangeLikeAnswer) => {
+  try {
+    const res = await fetch(
+      "http://localhost:3000/api/answers/dislike/" + likeData.answerID,
+      {
+        method: likeData.method,
+        body: JSON.stringify({
+          authorID: likeData.authorID,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await res.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const Answer = ({ answer }: IAnswerProps) => {
   const format = useFormatter();
   const { data: session } = useSession();
+  const { curId } = useModalQuestion();
+  const queryClient = useQueryClient();
 
   const isAuthLiked =
     session?.user.id &&
@@ -28,6 +79,92 @@ const Answer = ({ answer }: IAnswerProps) => {
     session?.user.id &&
     answer.dislikes.length &&
     answer.dislikes.includes(session.user.id);
+
+  const { mutate: likeAnswer } = useMutation({
+    mutationFn: likeAnswerApi,
+    onSuccess(data, variables, context) {
+      console.log({ ...data.data });
+      queryClient.setQueryData(
+        ["question", curId],
+        (oldData: IQuestionResponseData) =>
+          oldData
+            ? {
+                ...oldData,
+                answers: oldData.answers?.map((a) =>
+                  a._id === answer._id ? data.data : a,
+                ),
+              }
+            : oldData,
+      );
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
+  });
+
+  const { mutate: dislikeAnswer } = useMutation({
+    mutationFn: dislikeQuestionApi,
+    onSuccess(data, variables, context) {
+      queryClient.setQueryData(
+        ["question", curId],
+        (oldData: IQuestionResponseData) =>
+          oldData
+            ? {
+                ...oldData,
+                answers: oldData.answers?.map((a) =>
+                  a._id === answer._id ? data.data : a,
+                ),
+              }
+            : oldData,
+      );
+      console.log(data);
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
+  });
+
+  const handleToggleLike = () => {
+    if (!session?.user) {
+      console.log("Chua dang nhap");
+      return;
+    }
+
+    if (isAuthLiked) {
+      likeAnswer({
+        authorID: session.user.id,
+        answerID: answer._id,
+        method: "DELETE",
+      });
+    } else {
+      likeAnswer({
+        authorID: session.user.id,
+        answerID: answer._id,
+        method: "PATCH",
+      });
+    }
+  };
+
+  const handleToggleDislike = () => {
+    if (!session?.user) {
+      console.log("Chua dang nhap");
+      return;
+    }
+
+    if (isAuthDisliked) {
+      dislikeAnswer({
+        authorID: session.user.id,
+        answerID: answer._id,
+        method: "DELETE",
+      });
+    } else {
+      dislikeAnswer({
+        authorID: session.user.id,
+        answerID: answer._id,
+        method: "PATCH",
+      });
+    }
+  };
 
   return (
     <div className="flex items-start justify-between">
@@ -54,6 +191,7 @@ const Answer = ({ answer }: IAnswerProps) => {
           />
           <div className="mt-2">
             <button
+              onClick={handleToggleLike}
               className={`me-2 rounded-md border border-white px-2 py-1 text-xs transition-all ${
                 isAuthLiked
                   ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
@@ -64,6 +202,7 @@ const Answer = ({ answer }: IAnswerProps) => {
               <span>{answer.likes.length}</span>
             </button>
             <button
+              onClick={handleToggleDislike}
               className={`rounded-md border border-white px-2 py-1 text-xs transition-all hover:bg-gray-800 ${
                 isAuthDisliked
                   ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"

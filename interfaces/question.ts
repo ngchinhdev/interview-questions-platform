@@ -28,3 +28,9 @@ export interface IAnswer {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface IChangeLikeQuestion {
+    authorID: string,
+    questionID: string;
+    method: "PATCH" | "DELETE";
+}

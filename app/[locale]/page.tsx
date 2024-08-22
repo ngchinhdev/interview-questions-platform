@@ -31,7 +31,6 @@ const getQuestions = async () => {
 const QuestionList = async ({ children }: { children: ReactNode }) => {
   const questions = await getQuestions();
 
-  console.log(questions);
   if (!questions || !questions.length) {
     return <div>No questions found.</div>;
   }
