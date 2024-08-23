@@ -42,6 +42,7 @@ const getQuestionByID = async (id: string) => {
 };
 
 const ModalQuestionAvailable = () => {
+  console.log("re");
   const { isOpen, onOpenChange, curId } = useModalQuestion();
   const { data: session } = useSession();
 
@@ -49,6 +50,7 @@ const ModalQuestionAvailable = () => {
     data: question,
     isError,
     isLoading,
+    isFetching,
   } = useQuery({
     queryKey: ["question", curId],
     queryFn: () => getQuestionByID(curId),
@@ -90,7 +92,7 @@ const ModalQuestionAvailable = () => {
                   </strong>
                 </div>
               </div>
-              <div className="pr-11">
+              <div className="pr-24">
                 <DropdownMenu>
                   <DropdownMenuTrigger className="mr-0 outline-none">
                     <EllipsisVertical className="cursor-pointer" />
@@ -109,23 +111,22 @@ const ModalQuestionAvailable = () => {
                 </DropdownMenu>
               </div>
             </div>
-            <div className="mt-3 ps-11">
+            <div className="mt-3 flex flex-col gap-4 px-11">
               {question.answers && question.answers.length
                 ? question.answers?.map((a) => (
                     <Answer answer={a} key={a._id} />
                   ))
                 : "Chua ai tra loi"}
-              {session?.user &&
-              question.answers?.every(
-                (a) => a.author._id !== session.user.id,
-              ) ? (
-                session.user ? (
+              {session?.user ? (
+                question.answers?.every(
+                  (a) => a.author._id !== session.user.id,
+                ) && !isFetching ? (
                   <AnswerBox />
                 ) : (
-                  <LoginButton>Đăng nhập để trả lời</LoginButton>
+                  ""
                 )
               ) : (
-                ""
+                <LoginButton>Đăng nhập để trả lời</LoginButton>
               )}
             </div>
           </div>

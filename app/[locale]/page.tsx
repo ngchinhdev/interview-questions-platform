@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ReactNode } from "react";
 
 const getQuestions = async () => {
   try {
@@ -28,7 +27,7 @@ const getQuestions = async () => {
   }
 };
 
-const QuestionList = async ({ children }: { children: ReactNode }) => {
+const QuestionList = async () => {
   const questions = await getQuestions();
 
   if (!questions || !questions.length) {

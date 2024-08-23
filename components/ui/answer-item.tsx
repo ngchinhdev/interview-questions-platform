@@ -72,30 +72,21 @@ const Answer = ({ answer }: IAnswerProps) => {
 
   const isAuthLiked =
     session?.user.id &&
-    answer.likes.length &&
+    answer.likes?.length &&
     answer.likes.includes(session.user.id);
 
   const isAuthDisliked =
     session?.user.id &&
-    answer.dislikes.length &&
+    answer.dislikes?.length &&
     answer.dislikes.includes(session.user.id);
 
   const { mutate: likeAnswer } = useMutation({
     mutationFn: likeAnswerApi,
     onSuccess(data, variables, context) {
       console.log({ ...data.data });
-      queryClient.setQueryData(
-        ["question", curId],
-        (oldData: IQuestionResponseData) =>
-          oldData
-            ? {
-                ...oldData,
-                answers: oldData.answers?.map((a) =>
-                  a._id === answer._id ? data.data : a,
-                ),
-              }
-            : oldData,
-      );
+      queryClient.invalidateQueries({
+        queryKey: ["question", curId],
+      });
     },
     onError(error, variables, context) {
       console.log(error);
@@ -105,18 +96,9 @@ const Answer = ({ answer }: IAnswerProps) => {
   const { mutate: dislikeAnswer } = useMutation({
     mutationFn: dislikeQuestionApi,
     onSuccess(data, variables, context) {
-      queryClient.setQueryData(
-        ["question", curId],
-        (oldData: IQuestionResponseData) =>
-          oldData
-            ? {
-                ...oldData,
-                answers: oldData.answers?.map((a) =>
-                  a._id === answer._id ? data.data : a,
-                ),
-              }
-            : oldData,
-      );
+      queryClient.invalidateQueries({
+        queryKey: ["question", curId],
+      });
       console.log(data);
     },
     onError(error, variables, context) {
@@ -168,7 +150,7 @@ const Answer = ({ answer }: IAnswerProps) => {
 
   return (
     <div className="flex items-start justify-between">
-      <div className="mb-4 flex items-start gap-3">
+      <div className="flex items-start gap-3">
         <Avatar className="mt-1 h-8 w-8">
           <AvatarImage src={answer.author.image} />
           <AvatarFallback>{answer.author.username.slice(0, 2)}</AvatarFallback>

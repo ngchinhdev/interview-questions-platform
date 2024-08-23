@@ -10,8 +10,13 @@ import { Textarea } from "@components/ui/textarea";
 import { IQuestionResponseData } from "@interfaces/question";
 import ModalPreview from "@components/ui/modal-preview";
 import Tiptap, { ITiptapRef } from "./ui/tiptap";
+import { useQuery } from "@tanstack/react-query";
 
-const FormCreate = () => {
+interface IFormCreateProps {
+  editId: string;
+}
+
+const FormCreate = ({ editId }: IFormCreateProps) => {
   const [tags, setTags] = useState<string[]>([]);
   const [statePreview, setStatePreview] = useState<{
     isOpen: boolean;
@@ -24,6 +29,11 @@ const FormCreate = () => {
   const tagRef = useRef<HTMLInputElement>(null);
   const questionRef = useRef<HTMLTextAreaElement>(null);
   const answerRef = useRef<ITiptapRef>(null);
+
+  const { data: editQuestion } = useQuery({
+    queryKey: ["question", editId],
+    enabled: !!editId,
+  });
 
   async function onSubmit() {
     if (!questionRef.current || !answerRef.current) {
