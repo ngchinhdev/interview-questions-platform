@@ -34,3 +34,13 @@ export interface IChangeLikeQuestion {
     questionID: string;
     method: "PATCH" | "DELETE";
 }
+
+export interface ICreateQuestion {
+    authorID: string,
+    title: string;
+    tags: string[];
+}
+
+export interface IUpdateQuestion extends ICreateQuestion {
+    _id: string;
+}

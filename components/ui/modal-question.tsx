@@ -9,7 +9,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
-import { IQuestionResponseData } from "@interfaces/question";
 import Answer from "./answer-item";
 import LoadingSpinner from "./loading-spinner";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
@@ -25,21 +24,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
-
-const getQuestionByID = async (id: string) => {
-  try {
-    const res = await fetch("http://localhost:3000/api/questions/" + id);
-    console.log(id);
-    if (!res.ok) {
-      throw new Error("Failed to fetch data");
-    }
-
-    const data = await res.json();
-    return data.data as IQuestionResponseData;
-  } catch (error) {
-    console.log(error);
-  }
-};
+import { getQuestionByID } from "@services/question";
+import { Link } from "@navigation/navigation";
 
 const ModalQuestionAvailable = () => {
   console.log("re");
@@ -100,7 +86,9 @@ const ModalQuestionAvailable = () => {
                   <DropdownMenuContent align="end">
                     {session?.user.id === question.author._id ? (
                       <>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <Link href={`/form/edit/${question._id}`}>
+                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                        </Link>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>Delete</DropdownMenuItem>
                       </>

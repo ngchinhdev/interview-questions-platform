@@ -29,7 +29,7 @@ const RootLayout = async ({
 }) => {
   return (
     <html lang={locale} suppressHydrationWarning={true}>
-      <body>
+      <body className="!pointer-events-auto">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

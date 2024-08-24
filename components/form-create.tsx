@@ -1,6 +1,6 @@
 "use client";
 
-import React, { KeyboardEvent, useRef, useState } from "react";
+import React, { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 
 import { Button } from "@components/ui/button";
@@ -10,7 +10,15 @@ import { Textarea } from "@components/ui/textarea";
 import { IQuestionResponseData } from "@interfaces/question";
 import ModalPreview from "@components/ui/modal-preview";
 import Tiptap, { ITiptapRef } from "./ui/tiptap";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createQuestion,
+  getQuestionByID,
+  updateQuestion,
+} from "@services/question";
+import { createAnswer, updateAnswer } from "@services/answer";
+import NotFound from "@app/not-found";
+import { useRouter } from "@navigation/navigation";
 
 interface IFormCreateProps {
   editId: string;
@@ -29,10 +37,60 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
   const tagRef = useRef<HTMLInputElement>(null);
   const questionRef = useRef<HTMLTextAreaElement>(null);
   const answerRef = useRef<ITiptapRef>(null);
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: editQuestion } = useQuery({
     queryKey: ["question", editId],
+    queryFn: () => getQuestionByID(editId),
     enabled: !!editId,
+  });
+
+  useEffect(() => {
+    if (editQuestion) {
+      setTags(editQuestion.tags);
+    }
+  }, [editQuestion]);
+
+  const {
+    mutate: mutateAnswer,
+    data: newAnswer,
+    isPending: pendingAnswer,
+    isError: errorAnswer,
+  } = useMutation({
+    mutationFn: editId ? updateAnswer : createAnswer,
+    onSuccess(data, variables, context) {
+      console.log(data);
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
+  });
+
+  const {
+    mutate: mutateQuestion,
+    data: newQuestion,
+    isPending: pendingQuestion,
+    isError: errorQuestion,
+  } = useMutation({
+    mutationFn: editId ? updateQuestion : createQuestion,
+    onSuccess(data, variables, context) {
+      if (answerRef.current!.editorValue) {
+        console.log(2);
+        mutateAnswer({
+          authorID: session!.user.id,
+          questionID: data.data._id,
+          content: answerRef.current!.editorValue,
+          _id: editQuestion?.answers?.find(
+            (a: any) => a.author._id === session?.user.id,
+          )?._id,
+        });
+      }
+      window.location.href = "/";
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
   });
 
   async function onSubmit() {
@@ -46,43 +104,33 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/questions/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            authorID: session.user.id,
-            title: questionRef.current.value,
-            tags,
-          }),
-        },
-      );
+      mutateQuestion({
+        authorID: session.user.id,
+        title: questionRef.current.value,
+        tags,
+        _id: editId,
+      });
+      console.log(newQuestion);
+      // if (answerRef.current.editorValue) {
+      //   console.log({
+      //     authorID: session.user.id,
+      //     questionID: newQuestion.data._id,
+      //     content: answerRef.current.editorValue,
+      //     _id: editQuestion?.answers?.find(
+      //       (a: any) => a.author._id === session?.user.id,
+      //     )?._id,
+      //   });
+      //   mutateAnswer({
+      //     authorID: session.user.id,
+      //     questionID: newQuestion.data._id,
+      //     content: answerRef.current.editorValue,
+      //     _id: editQuestion?.answers?.find(
+      //       (a: any) => a.author._id === session?.user.id,
+      //     )?._id,
+      //   });
 
-      const data = await response.json();
-
-      if (answerRef.current.editorValue) {
-        const responseAnswer = await fetch(
-          "http://localhost:3000/api/answers/create",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              authorID: session.user.id,
-              questionID: data.data._id,
-              content: answerRef.current.editorValue,
-            }),
-          },
-        );
-
-        const newAnswer = await responseAnswer.json();
-
-        console.log(newAnswer);
-      }
+      //   console.log(newAnswer);
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -160,6 +208,10 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
     });
   };
 
+  if (!editQuestion) {
+    return <NotFound />;
+  }
+
   return (
     <div className="mt-5">
       <div className="grid w-full gap-1.5">
@@ -170,6 +222,7 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
           placeholder="Type your question here"
           id="question"
           name="question"
+          defaultValue={editQuestion?.title}
           ref={questionRef}
         />
       </div>
@@ -177,14 +230,14 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
         <Label className="text-sm lg:text-lg" htmlFor="answer">
           Your answer <span className="text-sm font-normal">(Optional)</span>
         </Label>
-        {/* <Textarea
-          placeholder="Type your answer here"
-          className="h-40"
-          id="answer"
-          name="answer"
+        <Tiptap
           ref={answerRef}
-        /> */}
-        <Tiptap ref={answerRef} />
+          defaultValue={
+            editQuestion?.answers?.find(
+              (a) => a.author._id === session?.user.id,
+            )?.content
+          }
+        />
       </div>
       <div className="mt-3 grid w-full items-center gap-1.5">
         <Label className="text-sm lg:text-lg" htmlFor="tag">
@@ -203,7 +256,7 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
                 >
                   x
                 </span>
-                <span className="">{tag}</span>
+                <span>{tag}</span>
               </li>
             ))}
             <li className="flex-1">
@@ -224,7 +277,7 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
           Reset
         </Button>
         <Button variant="default" onClick={handleSetPreviewData}>
-          Create
+          {editId ? "Update" : "Create"}
         </Button>
         <ModalPreview
           isOpen={statePreview.isOpen}

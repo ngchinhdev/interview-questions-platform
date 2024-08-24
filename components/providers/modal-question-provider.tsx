@@ -6,6 +6,7 @@ import {
   ReactNode,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
@@ -24,7 +25,7 @@ const ModalQuestionContext = createContext<{
 const ModalQuestionProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [curId, setCurId] = useState("");
-  console.log("củ", curId);
+
   return (
     <ModalQuestionContext.Provider
       value={{
