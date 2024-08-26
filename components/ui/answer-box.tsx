@@ -8,6 +8,7 @@ import { ICreateAnswer } from "@interfaces/answer";
 import { useSession } from "next-auth/react";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
 import LoadingSpinner from "./loading-spinner";
+import { IAnswer } from "@interfaces/question";
 
 const addNewAnswer = async (answer: ICreateAnswer) => {
   try {
@@ -27,7 +28,11 @@ const addNewAnswer = async (answer: ICreateAnswer) => {
   }
 };
 
-const AnswerBox = () => {
+interface IAnswerBoxProps {
+  existedAnswer?: IAnswer;
+}
+
+const AnswerBox = ({ existedAnswer }: IAnswerBoxProps) => {
   const { data: session } = useSession();
   const { curId, onOpenChange, onChangeCurId } = useModalQuestion();
   const queryClient = useQueryClient();
@@ -64,7 +69,7 @@ const AnswerBox = () => {
 
   return (
     <div className="mt-2">
-      <Tiptap ref={answerRef} />
+      <Tiptap ref={answerRef} defaultValue={existedAnswer?.content} />
       <Button onClick={handleAddAnswer}>Hello</Button>
     </div>
   );

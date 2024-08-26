@@ -13,6 +13,8 @@ import { useSession } from "next-auth/react";
 import { IChangeLikeAnswer } from "@interfaces/answer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
+import { useState } from "react";
+import AnswerBox from "./answer-box";
 
 interface IAnswerProps {
   answer: IAnswer;
@@ -65,6 +67,7 @@ const dislikeQuestionApi = async (likeData: IChangeLikeAnswer) => {
 };
 
 const Answer = ({ answer }: IAnswerProps) => {
+  const [isOpenAnswerBox, setIsOpenAnswerBox] = useState(false);
   const format = useFormatter();
   const { data: session } = useSession();
   const { curId } = useModalQuestion();
@@ -149,70 +152,76 @@ const Answer = ({ answer }: IAnswerProps) => {
   };
 
   return (
-    <div className="flex items-start justify-between">
-      <div className="flex items-start gap-3">
-        <Avatar className="mt-1 h-8 w-8">
-          <AvatarImage src={answer.author.image} />
-          <AvatarFallback>{answer.author.username.slice(0, 2)}</AvatarFallback>
-        </Avatar>
-        <div>
-          <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
-            <span>{answer.author.username}</span>
-            <span className="text-sm">
-              &#x2022; {format.relativeTime(new Date(answer.createdAt))}
-            </span>
-          </h6>
-          <p
-            className="text-lg leading-tight"
-            dangerouslySetInnerHTML={{
-              __html:
-                answer && answer?.content
-                  ? answer.content
-                  : "<p>Chưa có câu trả lời</p>",
-            }}
-          />
-          <div className="mt-2">
-            <button
-              onClick={handleToggleLike}
-              className={`me-2 rounded-md border border-white px-2 py-1 text-xs transition-all ${
-                isAuthLiked
-                  ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
-                  : "dark:hover:bg-red-800"
-              }`}
-            >
-              <span className="me-1">👍</span>
-              <span>{answer.likes.length}</span>
-            </button>
-            <button
-              onClick={handleToggleDislike}
-              className={`rounded-md border border-white px-2 py-1 text-xs transition-all hover:bg-gray-800 ${
-                isAuthDisliked
-                  ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
-                  : "dark:hover:bg-red-800"
-              }`}
-            >
-              <span className="me-1">👎</span>
-              <span>{answer.dislikes.length}</span>
-            </button>
+    <div className="flex items-start gap-3">
+      <Avatar className="mt-1 h-8 w-8">
+        <AvatarImage src={answer.author.image} />
+        <AvatarFallback>{answer.author.username.slice(0, 2)}</AvatarFallback>
+      </Avatar>
+      {isOpenAnswerBox && session?.user.id ? (
+        <AnswerBox existedAnswer={answer} />
+      ) : (
+        <>
+          <div>
+            <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
+              <span>{answer.author.username}</span>
+              <span className="text-sm">
+                &#x2022; {format.relativeTime(new Date(answer.createdAt))}
+              </span>
+            </h6>
+            <p
+              className="text-lg leading-tight"
+              dangerouslySetInnerHTML={{
+                __html:
+                  answer && answer?.content
+                    ? answer.content
+                    : "<p>Chưa có câu trả lời</p>",
+              }}
+            />
+            <div className="mt-2">
+              <button
+                onClick={handleToggleLike}
+                className={`me-2 rounded-md border border-white px-2 py-1 text-xs transition-all ${
+                  isAuthLiked
+                    ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
+                    : "dark:hover:bg-red-800"
+                }`}
+              >
+                <span className="me-1">👍</span>
+                <span>{answer.likes.length}</span>
+              </button>
+              <button
+                onClick={handleToggleDislike}
+                className={`rounded-md border border-white px-2 py-1 text-xs transition-all hover:bg-gray-800 ${
+                  isAuthDisliked
+                    ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
+                    : "dark:hover:bg-red-800"
+                }`}
+              >
+                <span className="me-1">👎</span>
+                <span>{answer.dislikes.length}</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="mr-0 outline-none">
-          <EllipsisVertical className="cursor-pointer" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {session?.user.id === answer.author._id ? (
-            <>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Delete</DropdownMenuItem>
-            </>
-          ) : (
-            <DropdownMenuItem>Report</DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex flex-1 justify-end outline-none">
+              <EllipsisVertical className="cursor-pointer" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {session?.user.id === answer.author._id ? (
+                <>
+                  <DropdownMenuItem onClick={() => setIsOpenAnswerBox(true)}>
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Delete</DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem>Report</DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </>
+      )}
     </div>
   );
 };

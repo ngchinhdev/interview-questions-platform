@@ -105,15 +105,7 @@ const ModalQuestionAvailable = () => {
                     <Answer answer={a} key={a._id} />
                   ))
                 : "Chua ai tra loi"}
-              {session?.user ? (
-                question.answers?.every(
-                  (a) => a.author._id !== session.user.id,
-                ) && !isFetching ? (
-                  <AnswerBox />
-                ) : (
-                  ""
-                )
-              ) : (
+              {!session?.user && (
                 <LoginButton>Đăng nhập để trả lời</LoginButton>
               )}
             </div>

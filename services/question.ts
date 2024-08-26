@@ -1,4 +1,4 @@
-import { ICreateQuestion, IQuestionResponseData, IUpdateQuestion } from "@interfaces/question";
+import { IChangeLikeQuestion, ICreateQuestion, IQuestionResponseData, IUpdateQuestion } from "@interfaces/question";
 
 export const getQuestionByID = async (id: string) => {
     try {
@@ -51,6 +51,29 @@ export const updateQuestion = async (updateQuestion: IUpdateQuestion) => {
 
         const data = await response.json();
 
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
+export const likeQuestion = async (likeData: IChangeLikeQuestion) => {
+    try {
+        const res = await fetch(
+            "http://localhost:3000/api/questions/like/" + likeData.questionID,
+            {
+                method: likeData.method,
+                body: JSON.stringify({
+                    authorID: likeData.authorID,
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            },
+        );
+
+        const data = await res.json();
         return data;
     } catch (error) {
         console.log(error);

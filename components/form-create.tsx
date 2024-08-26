@@ -58,7 +58,11 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
     isPending: pendingAnswer,
     isError: errorAnswer,
   } = useMutation({
-    mutationFn: editId ? updateAnswer : createAnswer,
+    mutationFn: editQuestion?.answers?.find(
+      (a) => a.author._id === session?.user.id,
+    )
+      ? updateAnswer
+      : createAnswer,
     onSuccess(data, variables, context) {
       console.log(data);
     },
@@ -86,12 +90,17 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
           )?._id,
         });
       }
-      window.location.href = "/";
     },
     onError(error, variables, context) {
       console.log(error);
     },
   });
+
+  useEffect(() => {
+    if (newAnswer) {
+      window.location.href = "/";
+    }
+  }, [newAnswer]);
 
   async function onSubmit() {
     if (!questionRef.current || !answerRef.current) {
@@ -110,27 +119,8 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
         tags,
         _id: editId,
       });
-      console.log(newQuestion);
-      // if (answerRef.current.editorValue) {
-      //   console.log({
-      //     authorID: session.user.id,
-      //     questionID: newQuestion.data._id,
-      //     content: answerRef.current.editorValue,
-      //     _id: editQuestion?.answers?.find(
-      //       (a: any) => a.author._id === session?.user.id,
-      //     )?._id,
-      //   });
-      //   mutateAnswer({
-      //     authorID: session.user.id,
-      //     questionID: newQuestion.data._id,
-      //     content: answerRef.current.editorValue,
-      //     _id: editQuestion?.answers?.find(
-      //       (a: any) => a.author._id === session?.user.id,
-      //     )?._id,
-      //   });
 
-      //   console.log(newAnswer);
-      // }
+      console.log(newQuestion);
     } catch (error) {
       console.log(error);
     }

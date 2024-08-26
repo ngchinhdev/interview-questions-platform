@@ -4,39 +4,15 @@ import React, { useEffect, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  IChangeLikeQuestion,
-  IQuestionResponseData,
-} from "@interfaces/question";
+import { IQuestionResponseData } from "@interfaces/question";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
 import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
+import { likeQuestion as likeQuestionApi } from "@services/question";
 
 interface IQuestionCardProps {
   questionData: IQuestionResponseData;
 }
-
-const likeQuestionApi = async (likeData: IChangeLikeQuestion) => {
-  try {
-    const res = await fetch(
-      "http://localhost:3000/api/questions/like/" + likeData.questionID,
-      {
-        method: likeData.method,
-        body: JSON.stringify({
-          authorID: likeData.authorID,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const QuestionCard = ({ questionData }: IQuestionCardProps) => {
   const [isLiked, setIsLiked] = useState(false);

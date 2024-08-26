@@ -15,7 +15,7 @@ import {
 const getQuestions = async () => {
   try {
     const res = await fetch("http://localhost:3000/api/questions", {
-      cache: "no-store",
+      cache: "no-cache",
     });
 
     if (!res.ok) {
