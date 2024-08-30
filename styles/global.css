@@ -82,6 +82,10 @@
   background: #555;
 }
 
+.tiptap p {
+  word-wrap: break-word;
+}
+
 @layer base {
   * {
     @apply border-border;

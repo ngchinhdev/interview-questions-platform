@@ -4,6 +4,7 @@ import sanitizeHtml from "sanitize-html";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
+import HardBreak from "@tiptap/extension-hard-break";
 import Toolbar from "./editor-toolbar";
 import { forwardRef, useImperativeHandle } from "react";
 
@@ -18,7 +19,7 @@ export interface ITiptapProps {
 
 const Tiptap = forwardRef<ITiptapRef, ITiptapProps>((props, ref) => {
   const editor = useEditor({
-    extensions: [StarterKit, Underline],
+    extensions: [StarterKit, Underline, HardBreak],
     editorProps: {
       attributes: {
         class:
@@ -39,9 +40,12 @@ const Tiptap = forwardRef<ITiptapRef, ITiptapProps>((props, ref) => {
   }
 
   return (
-    <div className="w-full">
+    <div>
       <Toolbar editor={editor} />
-      <EditorContent style={{ whiteSpace: "pre-line" }} editor={editor} />
+      <EditorContent
+        style={{ whiteSpace: "normal", wordWrap: "break-word" }}
+        editor={editor}
+      />
     </div>
   );
 });

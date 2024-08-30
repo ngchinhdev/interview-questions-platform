@@ -26,11 +26,18 @@ import {
 } from "./dropdown-menu";
 import { getQuestionByID } from "@services/question";
 import { Link } from "@navigation/navigation";
+import { useEffect, useState } from "react";
 
 const ModalQuestionAvailable = () => {
-  console.log("re");
+  const [isOpenAnswerBox, setIsOpenAnswerBox] = useState(false);
   const { isOpen, onOpenChange, curId } = useModalQuestion();
   const { data: session } = useSession();
+
+  console.log(isOpenAnswerBox);
+
+  useEffect(() => {
+    setIsOpenAnswerBox(false);
+  }, [curId]);
 
   const {
     data: question,
@@ -76,6 +83,7 @@ const ModalQuestionAvailable = () => {
                   <strong className="text-lg leading-tight">
                     {question.title}
                   </strong>
+                  <p onClick={() => setIsOpenAnswerBox(true)}>Trả lời</p>
                 </div>
               </div>
               <div className="pr-24">
@@ -102,9 +110,18 @@ const ModalQuestionAvailable = () => {
             <div className="mt-3 flex flex-col gap-4 px-11">
               {question.answers && question.answers.length
                 ? question.answers?.map((a) => (
-                    <Answer answer={a} key={a._id} />
+                    <Answer
+                      onOpenAnswerBox={setIsOpenAnswerBox}
+                      isOpenAnswerBox={isOpenAnswerBox}
+                      answer={a}
+                      key={a._id}
+                    />
                   ))
                 : "Chua ai tra loi"}
+              {isOpenAnswerBox &&
+                !question.answers?.find(
+                  (a) => a.author._id === session?.user.id,
+                ) && <AnswerBox />}
               {!session?.user && (
                 <LoginButton>Đăng nhập để trả lời</LoginButton>
               )}

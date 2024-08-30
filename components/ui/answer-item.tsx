@@ -13,11 +13,13 @@ import { useSession } from "next-auth/react";
 import { IChangeLikeAnswer } from "@interfaces/answer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useModalQuestion } from "@components/providers/modal-question-provider";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AnswerBox from "./answer-box";
 
 interface IAnswerProps {
   answer: IAnswer;
+  isOpenAnswerBox: boolean;
+  onOpenAnswerBox: (isOpen: boolean) => void;
 }
 
 const likeAnswerApi = async (likeData: IChangeLikeAnswer) => {
@@ -66,8 +68,7 @@ const dislikeQuestionApi = async (likeData: IChangeLikeAnswer) => {
   }
 };
 
-const Answer = ({ answer }: IAnswerProps) => {
-  const [isOpenAnswerBox, setIsOpenAnswerBox] = useState(false);
+const Answer = ({ answer, isOpenAnswerBox, onOpenAnswerBox }: IAnswerProps) => {
   const format = useFormatter();
   const { data: session } = useSession();
   const { curId } = useModalQuestion();
@@ -152,15 +153,17 @@ const Answer = ({ answer }: IAnswerProps) => {
   };
 
   return (
-    <div className="flex items-start gap-3">
-      <Avatar className="mt-1 h-8 w-8">
-        <AvatarImage src={answer.author.image} />
-        <AvatarFallback>{answer.author.username.slice(0, 2)}</AvatarFallback>
-      </Avatar>
+    <>
       {isOpenAnswerBox && session?.user.id ? (
         <AnswerBox existedAnswer={answer} />
       ) : (
-        <>
+        <div className="flex items-start gap-3">
+          <Avatar className="mt-1 h-8 w-8">
+            <AvatarImage src={answer.author.image} />
+            <AvatarFallback>
+              {answer.author.username.slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
           <div>
             <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
               <span>{answer.author.username}</span>
@@ -209,7 +212,7 @@ const Answer = ({ answer }: IAnswerProps) => {
             <DropdownMenuContent align="end">
               {session?.user.id === answer.author._id ? (
                 <>
-                  <DropdownMenuItem onClick={() => setIsOpenAnswerBox(true)}>
+                  <DropdownMenuItem onClick={() => onOpenAnswerBox(true)}>
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -220,9 +223,9 @@ const Answer = ({ answer }: IAnswerProps) => {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
