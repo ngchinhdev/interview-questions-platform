@@ -12,9 +12,10 @@ import { EllipsisVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { IChangeLikeAnswer } from "@interfaces/answer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useModalQuestion } from "@components/providers/modal-question-provider";
 import { useState, useEffect } from "react";
 import AnswerBox from "./answer-box";
+import { dislikeQuestionApi, likeAnswerApi } from "@services/answer";
+import { useModalQuestion } from "@hooks/useModalQuestion";
 
 interface IAnswerProps {
   answer: IAnswer;
@@ -22,53 +23,8 @@ interface IAnswerProps {
   onOpenAnswerBox: (isOpen: boolean) => void;
 }
 
-const likeAnswerApi = async (likeData: IChangeLikeAnswer) => {
-  try {
-    const res = await fetch(
-      "http://localhost:3000/api/answers/like/" + likeData.answerID,
-      {
-        method: likeData.method,
-        body: JSON.stringify({
-          authorID: likeData.authorID,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-
-    const data = await res.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const dislikeQuestionApi = async (likeData: IChangeLikeAnswer) => {
-  try {
-    const res = await fetch(
-      "http://localhost:3000/api/answers/dislike/" + likeData.answerID,
-      {
-        method: likeData.method,
-        body: JSON.stringify({
-          authorID: likeData.authorID,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-
-    const data = await res.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const Answer = ({ answer, isOpenAnswerBox, onOpenAnswerBox }: IAnswerProps) => {
+  console.log(isOpenAnswerBox);
   const format = useFormatter();
   const { data: session } = useSession();
   const { curId } = useModalQuestion();
@@ -155,7 +111,7 @@ const Answer = ({ answer, isOpenAnswerBox, onOpenAnswerBox }: IAnswerProps) => {
   return (
     <>
       {isOpenAnswerBox && session?.user.id ? (
-        <AnswerBox existedAnswer={answer} />
+        <AnswerBox existedAnswer={answer} onOpenAnswerBox={onOpenAnswerBox} />
       ) : (
         <div className="flex items-start gap-3">
           <Avatar className="mt-1 h-8 w-8">

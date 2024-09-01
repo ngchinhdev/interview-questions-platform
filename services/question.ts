@@ -1,5 +1,22 @@
 import { IChangeLikeQuestion, ICreateQuestion, IQuestionResponseData, IUpdateQuestion } from "@interfaces/question";
 
+export const getQuestions = async () => {
+    try {
+        const res = await fetch("http://localhost:3000/api/questions", {
+            cache: "no-cache",
+        });
+
+        if (!res.ok) {
+            throw new Error("Failed to fetch data");
+        }
+
+        const data = await res.json();
+        return data.data as IQuestionResponseData[];
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const getQuestionByID = async (id: string) => {
     try {
         const res = await fetch("http://localhost:3000/api/questions/" + id);

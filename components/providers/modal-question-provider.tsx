@@ -1,25 +1,13 @@
 "use client";
 
-import {
-  createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { IModalQuestionContext } from "@interfaces/context";
+import { createContext, ReactNode, useContext, useState } from "react";
 
-const ModalQuestionContext = createContext<{
-  curId: string;
-  isOpen: boolean;
-  onOpenChange: Dispatch<SetStateAction<boolean>>;
-  onChangeCurId: Dispatch<SetStateAction<string>>;
-}>({
+export const ModalQuestionContext = createContext<IModalQuestionContext>({
   curId: "",
   isOpen: false,
   onOpenChange: () => false,
-  onChangeCurId: () => "",
+  onChangeCurId: () => {},
 });
 
 const ModalQuestionProvider = ({ children }: { children: ReactNode }) => {
@@ -38,10 +26,6 @@ const ModalQuestionProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </ModalQuestionContext.Provider>
   );
-};
-
-export const useModalQuestion = () => {
-  return useContext(ModalQuestionContext);
 };
 
 export default ModalQuestionProvider;

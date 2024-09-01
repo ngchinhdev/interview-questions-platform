@@ -6,23 +6,26 @@ import Tiptap, { ITiptapRef } from "./tiptap";
 import { Button } from "./button";
 import { ICreateAnswer } from "@interfaces/answer";
 import { useSession } from "next-auth/react";
-import { useModalQuestion } from "@components/providers/modal-question-provider";
 import LoadingSpinner from "./loading-spinner";
 import { IAnswer } from "@interfaces/question";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createAnswer } from "@services/answer";
+import { createAnswer, updateAnswer } from "@services/answer";
+import { useModalQuestion } from "@hooks/useModalQuestion";
+import { useRouter } from "@navigation/navigation";
 
 interface IAnswerBoxProps {
   existedAnswer?: IAnswer;
+  onOpenAnswerBox: (isOpen: boolean) => void;
 }
 
-const AnswerBox = ({ existedAnswer }: IAnswerBoxProps) => {
+const AnswerBox = ({ existedAnswer, onOpenAnswerBox }: IAnswerBoxProps) => {
   const { data: session } = useSession();
   const { curId, onOpenChange, onChangeCurId } = useModalQuestion();
   const queryClient = useQueryClient();
   const answerRef = useRef<ITiptapRef>(null);
+  const router = useRouter();
 
-  const { mutate: addAnswer, isPending } = useMutation({
+  const { mutate: addAnswer, isPending: isPendingAdd } = useMutation({
     mutationFn: createAnswer,
     onSuccess(data, variables, context) {
       console.log(data.data.question);
@@ -33,9 +36,31 @@ const AnswerBox = ({ existedAnswer }: IAnswerBoxProps) => {
     onError(error, variables, context) {
       console.log(error);
     },
+    onSettled(data, error, variables, context) {
+      onOpenAnswerBox(false);
+      router.refresh();
+    },
   });
 
-  const handleAddAnswer = () => {
+  const { mutate: editAnswer, isPending: isPendingEdit } = useMutation({
+    mutationFn: updateAnswer,
+    onSuccess(data, variables, context) {
+      console.log(data.data.question);
+      queryClient.invalidateQueries({
+        queryKey: ["question", data.data.question],
+      });
+      onOpenAnswerBox(false);
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
+    onSettled(data, error, variables, context) {
+      onOpenAnswerBox(false);
+      router.refresh();
+    },
+  });
+
+  const handleAddEditAnswer = () => {
     const userID = session?.user.id;
     const content = answerRef.current?.editorValue;
 
@@ -44,10 +69,17 @@ const AnswerBox = ({ existedAnswer }: IAnswerBoxProps) => {
       return;
     }
 
-    addAnswer({ authorID: userID, questionID: curId, content });
+    existedAnswer
+      ? editAnswer({
+          authorID: userID,
+          questionID: curId,
+          content,
+          _id: existedAnswer._id,
+        })
+      : addAnswer({ authorID: userID, questionID: curId, content });
   };
 
-  if (isPending) {
+  if (isPendingAdd || isPendingEdit) {
     return <LoadingSpinner className="mx-auto" size={50} />;
   }
 
@@ -59,7 +91,7 @@ const AnswerBox = ({ existedAnswer }: IAnswerBoxProps) => {
       </Avatar>
       <div className="mt-2 max-w-[660px] flex-1">
         <Tiptap ref={answerRef} defaultValue={existedAnswer?.content} />
-        <Button onClick={handleAddAnswer}>Hello</Button>
+        <Button onClick={handleAddEditAnswer}>Hello</Button>
       </div>
     </div>
   );

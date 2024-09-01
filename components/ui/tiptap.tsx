@@ -4,7 +4,6 @@ import sanitizeHtml from "sanitize-html";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import HardBreak from "@tiptap/extension-hard-break";
 import Toolbar from "./editor-toolbar";
 import { forwardRef, useImperativeHandle } from "react";
 
@@ -19,7 +18,7 @@ export interface ITiptapProps {
 
 const Tiptap = forwardRef<ITiptapRef, ITiptapProps>((props, ref) => {
   const editor = useEditor({
-    extensions: [StarterKit, Underline, HardBreak],
+    extensions: [StarterKit, Underline],
     editorProps: {
       attributes: {
         class:

@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useModalQuestion } from "@components/providers/modal-question-provider";
 import Answer from "./answer-item";
 import LoadingSpinner from "./loading-spinner";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
@@ -27,13 +26,12 @@ import {
 import { getQuestionByID } from "@services/question";
 import { Link } from "@navigation/navigation";
 import { useEffect, useState } from "react";
+import { useModalQuestion } from "@hooks/useModalQuestion";
 
 const ModalQuestionAvailable = () => {
   const [isOpenAnswerBox, setIsOpenAnswerBox] = useState(false);
   const { isOpen, onOpenChange, curId } = useModalQuestion();
   const { data: session } = useSession();
-
-  console.log(isOpenAnswerBox);
 
   useEffect(() => {
     setIsOpenAnswerBox(false);
@@ -83,7 +81,12 @@ const ModalQuestionAvailable = () => {
                   <strong className="text-lg leading-tight">
                     {question.title}
                   </strong>
-                  <p onClick={() => setIsOpenAnswerBox(true)}>Trả lời</p>
+                  {session?.user &&
+                    question.answers?.every(
+                      (a) => a.author._id !== session.user.id,
+                    ) && (
+                      <p onClick={() => setIsOpenAnswerBox(true)}>Trả lời</p>
+                    )}
                 </div>
               </div>
               <div className="pr-24">
@@ -121,7 +124,7 @@ const ModalQuestionAvailable = () => {
               {isOpenAnswerBox &&
                 !question.answers?.find(
                   (a) => a.author._id === session?.user.id,
-                ) && <AnswerBox />}
+                ) && <AnswerBox onOpenAnswerBox={setIsOpenAnswerBox} />}
               {!session?.user && (
                 <LoginButton>Đăng nhập để trả lời</LoginButton>
               )}

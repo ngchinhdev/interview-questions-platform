@@ -5,10 +5,12 @@ import { FaRegHeart } from "react-icons/fa";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IQuestionResponseData } from "@interfaces/question";
-import { useModalQuestion } from "@components/providers/modal-question-provider";
 import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 import { likeQuestion as likeQuestionApi } from "@services/question";
+import { useModalQuestion } from "@hooks/useModalQuestion";
+import { useSearch } from "@hooks/useSearch";
+import { usePathname, useRouter } from "@navigation/navigation";
 
 interface IQuestionCardProps {
   questionData: IQuestionResponseData;
@@ -19,6 +21,9 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
   const [likes, setLikes] = useState(0);
   const { onOpenChange, onChangeCurId } = useModalQuestion();
   const { data: session } = useSession();
+  const { onSetSearchValue } = useSearch();
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     if (session?.user && questionData.likes.length) {
@@ -65,6 +70,16 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
         method: "PATCH",
       });
     }
+  };
+
+  const handleClickTag = (tag: string) => {
+    const params = new URLSearchParams();
+
+    params.set("tag", tag);
+
+    router.push(`${pathname}?${params.toString()}`);
+
+    onSetSearchValue(tag);
   };
 
   return (
@@ -114,7 +129,11 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
       <div className="flex items-end justify-between text-[15px]">
         <div className="mt-1 flex items-center gap-2">
           {questionData.tags.map((tag) => (
-            <span key={tag} className="cursor-pointer">
+            <span
+              key={tag}
+              className="cursor-pointer"
+              onClick={() => handleClickTag(tag)}
+            >
               #{tag}
             </span>
           ))}
