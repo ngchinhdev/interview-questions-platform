@@ -44,3 +44,8 @@ export interface ICreateQuestion {
 export interface IUpdateQuestion extends ICreateQuestion {
     _id: string;
 }
+
+export interface IParamsQuestionList {
+    tag?: string;
+    search?: string;
+}

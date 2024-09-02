@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/select";
 import { getQuestions } from "@services/question";
 import Search from "@components/ui/search";
-import SearchProvider from "@components/providers/search-provider";
+import FilterProvider from "@components/providers/filter-provider";
+import PaginationCustom from "@components/ui/customs/pagination-custom";
 
 interface IQuestionList {
   params: { slug: string };
@@ -18,16 +19,14 @@ interface IQuestionList {
 }
 
 const QuestionList = async ({ params, searchParams }: IQuestionList) => {
-  const questions = await getQuestions();
+  const questions = await getQuestions(searchParams);
 
-  if (!questions || !questions.length) {
-    return <div>No questions found.</div>;
-  }
+  const isEmpty = !questions || !questions.length;
 
   return (
     <>
       <ModalQuestionProvider>
-        <SearchProvider>
+        <FilterProvider>
           <h1 className="mx-auto mt-8 w-[80%] scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-4xl">
             Explore & Share
             <br />
@@ -49,13 +48,20 @@ const QuestionList = async ({ params, searchParams }: IQuestionList) => {
               </SelectContent>
             </Select>
           </div>
-          <div className="mt-3 grid grid-cols-3 gap-6">
-            {questions.map((q) => (
-              <QuestionCard key={q._id} questionData={q} />
-            ))}
-          </div>
-          <ModalQuestion />
-        </SearchProvider>
+          {isEmpty ? (
+            <div>No questions found.</div>
+          ) : (
+            <>
+              <div className="mt-3 grid grid-cols-3 gap-6">
+                {questions.map((q) => (
+                  <QuestionCard key={q._id} questionData={q} />
+                ))}
+              </div>
+              <PaginationCustom totalRecords={questions.length} />
+              <ModalQuestion />
+            </>
+          )}
+        </FilterProvider>
       </ModalQuestionProvider>
     </>
   );

@@ -7,7 +7,9 @@ export interface IModalQuestionContext {
     onChangeCurId: Dispatch<SetStateAction<string>>;
 }
 
-export interface ISearchContext {
+export interface IFilterContext {
     searchValue: string;
+    curPage: number,
+    onChangePage: Dispatch<SetStateAction<number>>;
     onSetSearchValue: Dispatch<SetStateAction<string>>;
 }

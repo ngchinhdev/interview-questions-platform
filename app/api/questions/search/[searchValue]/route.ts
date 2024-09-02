@@ -1,13 +1,23 @@
 import { connectToDB } from "@libs/database";
+import { errorHandler } from "@libs/error";
 import Question from "@models/question";
 import { NextResponse } from "next/server";
 
-export const GET = async () => {
+export const GET = async (req: Request, context: any) => {
+    const { searchValue } = context.params;
+
     try {
         await connectToDB();
-        const questionsWithAnswers = await Question.aggregate([
+
+        const questions = await Question.aggregate([
             {
-                $match: { isDeleted: false }
+                $match: {
+                    isDeleted: false,
+                    $or: [
+                        { tags: { $in: [searchValue] } },
+                        { title: { $regex: searchValue, $options: "i" } }
+                    ]
+                }
             },
             {
                 $lookup: {
@@ -66,26 +76,17 @@ export const GET = async () => {
             }
         ]);
 
-        if (!questionsWithAnswers.length) {
+        if (!questions.length) {
             return NextResponse.json({
                 message: "No questions found."
             }, { status: 404 });
         }
 
         return NextResponse.json({
-            message: "Questions retrieved successfully.",
-            data: questionsWithAnswers
+            message: "Question retrieved successfully.",
+            data: questions,
         }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({
-            message: "Unknown error."
-        }, { status: 500 });
+        return errorHandler(error);
     }
 };
-
-// {
-//     "title": "What is your name?",
-//     "authorID": "",
-//     "languageID": "66a8852230a52d40386dfd81",
-//     "tags": ["#name", "#reactjs"]
-// }

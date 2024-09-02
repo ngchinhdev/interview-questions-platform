@@ -1,10 +1,21 @@
-import { IChangeLikeQuestion, ICreateQuestion, IQuestionResponseData, IUpdateQuestion } from "@interfaces/question";
+import { IChangeLikeQuestion, ICreateQuestion, IParamsQuestionList, IQuestionResponseData, IUpdateQuestion } from "@interfaces/question";
 
-export const getQuestions = async () => {
+export const getQuestions = async (paramsData: IParamsQuestionList) => {
     try {
-        const res = await fetch("http://localhost:3000/api/questions", {
-            cache: "no-cache",
-        });
+        let params = '';
+        if (paramsData.search) {
+            params = 'search/' + paramsData.search;
+        }
+        if (paramsData.tag) {
+            params = 'tag/' + paramsData.tag;
+        }
+
+        const res = await fetch(
+            `http://localhost:3000/api/questions/${params ? params : ''}`,
+            {
+                cache: "no-cache",
+            }
+        );
 
         if (!res.ok) {
             throw new Error("Failed to fetch data");

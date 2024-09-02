@@ -4,11 +4,11 @@ import React, { useEffect } from "react";
 
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
-import { useSearch } from "@hooks/useSearch";
+import { useFilter } from "@hooks/useFilter";
 import { usePathname, useRouter } from "@navigation/navigation";
 
 const Search = () => {
-  const { searchValue, onSetSearchValue } = useSearch();
+  const { searchValue, onSetSearchValue } = useFilter();
   const pathname = usePathname();
   const router = useRouter();
 

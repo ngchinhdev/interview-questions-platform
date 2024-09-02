@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 import { likeQuestion as likeQuestionApi } from "@services/question";
 import { useModalQuestion } from "@hooks/useModalQuestion";
-import { useSearch } from "@hooks/useSearch";
+import { useFilter } from "@hooks/useFilter";
 import { usePathname, useRouter } from "@navigation/navigation";
 
 interface IQuestionCardProps {
@@ -21,7 +21,7 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
   const [likes, setLikes] = useState(0);
   const { onOpenChange, onChangeCurId } = useModalQuestion();
   const { data: session } = useSession();
-  const { onSetSearchValue } = useSearch();
+  const { onSetSearchValue } = useFilter();
   const pathname = usePathname();
   const router = useRouter();
 

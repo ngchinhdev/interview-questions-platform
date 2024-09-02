@@ -45,7 +45,6 @@ const RootLayout = async ({
                   </ContentWrapper>
                 </div>
                 <ContentWrapper>
-                  {" "}
                   {children}
                   <Footer />
                 </ContentWrapper>
