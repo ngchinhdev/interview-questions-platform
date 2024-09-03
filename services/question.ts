@@ -1,4 +1,4 @@
-import { IChangeLikeQuestion, ICreateQuestion, IParamsQuestionList, IQuestionResponseData, IUpdateQuestion } from "@interfaces/question";
+import { IChangeLikeQuestion, ICreateQuestion, IParamsQuestionList, IQuestionResponseData, IQuestionResponseDataRecords, IUpdateQuestion } from "@interfaces/question";
 
 export const getQuestions = async (paramsData: IParamsQuestionList) => {
     try {
@@ -22,7 +22,7 @@ export const getQuestions = async (paramsData: IParamsQuestionList) => {
         }
 
         const data = await res.json();
-        return data.data as IQuestionResponseData[];
+        return data as IQuestionResponseDataRecords;
     } catch (error) {
         console.log(error);
     }

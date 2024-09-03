@@ -7,7 +7,7 @@ export const FilterContext = createContext<IFilterContext>({
   searchValue: "",
   curPage: 1,
   onSetSearchValue: () => {},
-  onChangePage: () => {},
+  onSetCurPage: () => {},
 });
 
 const FilterProvider = ({ children }: { children: ReactNode }) => {
@@ -20,7 +20,7 @@ const FilterProvider = ({ children }: { children: ReactNode }) => {
         searchValue,
         curPage,
         onSetSearchValue: setSearchValue,
-        onChangePage: setCurPage,
+        onSetCurPage: setCurPage,
       }}
     >
       {children}

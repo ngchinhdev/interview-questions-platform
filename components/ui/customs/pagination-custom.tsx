@@ -18,32 +18,44 @@ interface IPaginationCustom {
 }
 
 const PaginationCustom = ({ totalRecords }: IPaginationCustom) => {
-  const { curPage, onChangePage } = useFilter();
+  const { curPage, onSetCurPage } = useFilter();
 
   const totalPages = Math.ceil(totalRecords / PER_PAGE_RECORDS);
-  console.log(totalPages);
+
+  const handleNextPage = () => {
+    if (curPage < totalPages) {
+      onSetCurPage(curPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (curPage > 1) {
+      onSetCurPage(curPage - 1);
+    }
+  };
+
+  const handleSetCurPage = (page: number) => {
+    onSetCurPage(page);
+  };
+
   return (
     <Pagination className="mt-5">
       <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href="#"
-            onClick={() => onChangePage(curPage > 1 ? curPage - 1 : 1)}
-          />
+        <PaginationItem className="cursor-pointer">
+          <PaginationPrevious onClick={handlePrevPage} />
         </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#" isActive={true}>
-            {curPage}
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">{curPage + 1}</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext
-            href="#"
-            onClick={() => onChangePage(curPage < 1 ? curPage - 1 : 1)}
-          />
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <PaginationItem className="cursor-pointer" key={i}>
+            <PaginationLink
+              onClick={() => handleSetCurPage(i + 1)}
+              isActive={i + 1 === curPage ? true : false}
+            >
+              {i + 1}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
+        <PaginationItem className="cursor-pointer">
+          <PaginationNext onClick={handleNextPage} />
         </PaginationItem>
       </PaginationContent>
     </Pagination>

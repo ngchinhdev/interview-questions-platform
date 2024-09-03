@@ -10,6 +10,6 @@ export interface IModalQuestionContext {
 export interface IFilterContext {
     searchValue: string;
     curPage: number,
-    onChangePage: Dispatch<SetStateAction<number>>;
+    onSetCurPage: Dispatch<SetStateAction<number>>;
     onSetSearchValue: Dispatch<SetStateAction<string>>;
 }

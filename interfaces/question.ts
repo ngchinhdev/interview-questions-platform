@@ -14,6 +14,12 @@ export interface IQuestionResponseData {
     answers?: IAnswer[];
 }
 
+export interface IQuestionResponseDataRecords {
+    message: string;
+    data: IQuestionResponseData[],
+    totalRecords: number;
+}
+
 export interface IAnswer {
     _id: string;
     content: string;

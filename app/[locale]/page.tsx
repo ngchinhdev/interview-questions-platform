@@ -19,7 +19,9 @@ interface IQuestionList {
 }
 
 const QuestionList = async ({ params, searchParams }: IQuestionList) => {
-  const questions = await getQuestions(searchParams);
+  const data = await getQuestions(searchParams);
+
+  const questions = data?.data;
 
   const isEmpty = !questions || !questions.length;
 
@@ -57,7 +59,7 @@ const QuestionList = async ({ params, searchParams }: IQuestionList) => {
                   <QuestionCard key={q._id} questionData={q} />
                 ))}
               </div>
-              <PaginationCustom totalRecords={questions.length} />
+              <PaginationCustom totalRecords={data.totalRecords} />
               <ModalQuestion />
             </>
           )}

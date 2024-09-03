@@ -2,9 +2,23 @@ import { connectToDB } from "@libs/database";
 import Question from "@models/question";
 import { NextResponse } from "next/server";
 
-export const GET = async () => {
+export const GET = async (req: Request, context: any) => {
+    const url = new URL(req.url);
+
+    let limit = url.searchParams.get('limit');
+    let offset = url.searchParams.get('offset');
+
+    if (!limit) {
+        limit = '9';
+    }
+
+    if (!offset) {
+        offset = '0';
+    }
+
     try {
         await connectToDB();
+        const totalRecords = await Question.countDocuments();
         const questionsWithAnswers = await Question.aggregate([
             {
                 $match: { isDeleted: false }
@@ -63,6 +77,12 @@ export const GET = async () => {
                         updatedAt: 1
                     }
                 }
+            },
+            {
+                $skip: +offset
+            },
+            {
+                $limit: +limit
             }
         ]);
 
@@ -74,7 +94,8 @@ export const GET = async () => {
 
         return NextResponse.json({
             message: "Questions retrieved successfully.",
-            data: questionsWithAnswers
+            data: questionsWithAnswers,
+            totalRecords
         }, { status: 200 });
     } catch (error) {
         return NextResponse.json({
