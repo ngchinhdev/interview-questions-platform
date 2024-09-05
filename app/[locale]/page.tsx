@@ -1,6 +1,6 @@
 import ModalQuestionProvider from "@components/providers/modal-question-provider";
-import ModalQuestion from "@components/ui/modal-question";
-import QuestionCard from "@components/ui/question-card";
+import ModalQuestion from "@components/ui/customs/modal-question";
+import QuestionCard from "@components/ui/customs/question-card";
 import {
   Select,
   SelectContent,
@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getQuestions } from "@services/question";
-import Search from "@components/ui/search";
+import Search from "@components/ui/customs/search";
 import FilterProvider from "@components/providers/filter-provider";
 import PaginationCustom from "@components/ui/customs/pagination-custom";
 

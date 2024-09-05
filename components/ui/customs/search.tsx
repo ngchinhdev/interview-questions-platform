@@ -13,6 +13,8 @@ const Search = () => {
   const router = useRouter();
 
   const handleSearch = () => {
+    if (!searchValue) return;
+
     const params = new URLSearchParams();
 
     params.set("search", searchValue);
@@ -28,6 +30,7 @@ const Search = () => {
         placeholder="Search questions by tag or username"
         className="h-12 px-6"
         onChange={(e) => onSetSearchValue(e.target.value)}
+        onKeyDown={(e) => (e.key === "Enter" ? handleSearch() : {})}
       />
       <Button variant="default" className="h-12 w-28" onClick={handleSearch}>
         Search

@@ -2,9 +2,8 @@
 
 import React, { useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Tiptap, { ITiptapRef } from "./tiptap";
-import { Button } from "./button";
-import { ICreateAnswer } from "@interfaces/answer";
+import Tiptap, { ITiptapRef } from "../tiptap";
+import { Button } from "../button";
 import { useSession } from "next-auth/react";
 import LoadingSpinner from "./loading-spinner";
 import { IAnswer } from "@interfaces/question";

@@ -51,7 +51,9 @@ export interface IUpdateQuestion extends ICreateQuestion {
     _id: string;
 }
 
-export interface IParamsQuestionList {
+export interface IQueryQuestionList {
     tag?: string;
     search?: string;
+    limit?: number;
+    offset?: number;
 }

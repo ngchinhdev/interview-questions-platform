@@ -1,4 +1,5 @@
 import { isValidObjectId, Model } from "mongoose";
+import { ReadonlyURLSearchParams } from "next/navigation";
 
 export const checkValidExistID = async (id: string, model: Model<any>) => {
     if (!isValidObjectId(id)) {
@@ -11,9 +12,24 @@ export const checkValidExistID = async (id: string, model: Model<any>) => {
     }
 };
 
-// export const hideEmailByStars = (email: string) => {
-//     const lastPart = email.slice(11);
-//     const firstPart = email.slice(0, email.length - 1);
+export const updateSearchQuery = (
+    page: number,
+    limit: number,
+    offset: number,
+    searchParams: ReadonlyURLSearchParams,
+    pathname: string,
+) => {
+    const currentParams = new URLSearchParams(
+        Array.from(searchParams.entries()),
+    );
 
+    offset = (page - 1) * limit;
 
-// };
+    currentParams.set("offset", offset.toString());
+    currentParams.set("limit", limit.toString());
+
+    const search = currentParams.toString();
+    const query = search ? `?${search}` : "";
+
+    return `${pathname}${query}`;
+};

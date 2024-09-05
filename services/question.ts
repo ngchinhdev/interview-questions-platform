@@ -1,17 +1,24 @@
-import { IChangeLikeQuestion, ICreateQuestion, IParamsQuestionList, IQuestionResponseData, IQuestionResponseDataRecords, IUpdateQuestion } from "@interfaces/question";
+import { IChangeLikeQuestion, ICreateQuestion, IQueryQuestionList, IQuestionResponseData, IQuestionResponseDataRecords, IUpdateQuestion } from "@interfaces/question";
 
-export const getQuestions = async (paramsData: IParamsQuestionList) => {
+export const getQuestions = async (queryString: IQueryQuestionList) => {
     try {
-        let params = '';
-        if (paramsData.search) {
-            params = 'search/' + paramsData.search;
+        let query = '';
+        console.log(queryString);
+        if (queryString.search) {
+            query += `search=${queryString.search}`;
         }
-        if (paramsData.tag) {
-            params = 'tag/' + paramsData.tag;
+        if (queryString.tag) {
+            query += `&tag=${queryString.tag}`;
+        }
+        if (queryString.offset) {
+            query += `&offset=${queryString.offset}`;
+        }
+        if (queryString.limit) {
+            query += `&limit=${queryString.limit}`;
         }
 
         const res = await fetch(
-            `http://localhost:3000/api/questions/${params ? params : ''}`,
+            `http://localhost:3000/api/questions?${query}`,
             {
                 cache: "no-cache",
             }

@@ -1,7 +1,7 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import { ModeToggle } from "@/components/ui/toggle-mode";
+import { ModeToggle } from "@/components/ui/customs/toggle-mode";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import LoginButton from "./ui/login-button";
+import LoginButton from "./ui/customs/login-button";
 import { useLocale } from "next-intl";
 import { Link } from "@navigation/navigation";
 

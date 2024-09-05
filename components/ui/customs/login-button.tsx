@@ -8,7 +8,7 @@ import {
   signIn,
 } from "next-auth/react";
 import React, { ReactNode, useEffect, useState } from "react";
-import { Button } from "./button";
+import { Button } from "../button";
 
 const LoginButton = ({ children }: { children: ReactNode }) => {
   const [providers, setProviders] = useState<Record<

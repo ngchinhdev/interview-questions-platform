@@ -14,7 +14,7 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import AnswerBox from "./answer-box";
 import { useSession } from "next-auth/react";
 import LoginButton from "./login-button";
-import { Button } from "./button";
+import { Button } from "../button";
 import { EllipsisVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./dropdown-menu";
+} from "../dropdown-menu";
 import { getQuestionByID } from "@services/question";
 import { Link } from "@navigation/navigation";
 import { useEffect, useState } from "react";

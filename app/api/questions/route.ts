@@ -4,7 +4,9 @@ import { NextResponse } from "next/server";
 
 export const GET = async (req: Request, context: any) => {
     const url = new URL(req.url);
-
+    console.log(url);
+    const search = url.searchParams.get('search');
+    const tag = url.searchParams.get('tag');
     let limit = url.searchParams.get('limit');
     let offset = url.searchParams.get('offset');
 
@@ -18,10 +20,19 @@ export const GET = async (req: Request, context: any) => {
 
     try {
         await connectToDB();
-        const totalRecords = await Question.countDocuments();
+        let totalRecords = await Question.countDocuments();
         const questionsWithAnswers = await Question.aggregate([
             {
-                $match: { isDeleted: false }
+                $match: {
+                    isDeleted: false,
+                    ...(search ? {
+                        $or: [
+                            { tags: search },
+                            { title: { $regex: search, $options: "i" } }
+                        ]
+                    } : {}),
+                    ...(tag ? { tags: tag } : {})
+                }
             },
             {
                 $lookup: {
@@ -85,6 +96,10 @@ export const GET = async (req: Request, context: any) => {
                 $limit: +limit
             }
         ]);
+
+        if (search || tag) {
+            totalRecords = questionsWithAnswers.length;
+        }
 
         if (!questionsWithAnswers.length) {
             return NextResponse.json({

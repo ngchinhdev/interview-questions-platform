@@ -2,11 +2,9 @@ import "@/styles/global.css";
 import { Metadata } from "next";
 import { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
-import Link from "next/link";
-import Image from "next/image";
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import ContentWrapper from "@components/ui/content-wrapper";
+import ContentWrapper from "@components/ui/customs/content-wrapper";
 
 import Footer from "@components/footer";
 import { ReactQueryProvider } from "@components/providers/react-query-provider";

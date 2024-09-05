@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import QuestionCard from "@/components/ui/question-card";
+import QuestionCard from "./question-card";
 import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { IQuestionResponseData } from "@interfaces/question";

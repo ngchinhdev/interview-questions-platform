@@ -1,13 +1,13 @@
 import { useFormatter } from "next-intl";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { IAnswer, IQuestionResponseData } from "@interfaces/question";
+import { IAnswer } from "@interfaces/question";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./dropdown-menu";
+} from "../dropdown-menu";
 import { EllipsisVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { IChangeLikeAnswer } from "@interfaces/answer";

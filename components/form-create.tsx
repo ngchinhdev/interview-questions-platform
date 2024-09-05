@@ -8,7 +8,7 @@ import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
 import { Textarea } from "@components/ui/textarea";
 import { IQuestionResponseData } from "@interfaces/question";
-import ModalPreview from "@components/ui/modal-preview";
+import ModalPreview from "@components/ui/customs/modal-preview";
 import Tiptap, { ITiptapRef } from "./ui/tiptap";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
