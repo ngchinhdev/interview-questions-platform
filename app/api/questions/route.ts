@@ -7,6 +7,11 @@ export const GET = async (req: Request, context: any) => {
     console.log(url);
     const search = url.searchParams.get('search');
     const tag = url.searchParams.get('tag');
+    const sort = url.searchParams.get('sort');
+
+    const sortByHotQuestions = sort === "hot";
+    const sortByNewest = sort === "newest";
+
     let limit = url.searchParams.get('limit');
     let offset = url.searchParams.get('offset');
 
@@ -21,7 +26,7 @@ export const GET = async (req: Request, context: any) => {
     try {
         await connectToDB();
         let totalRecords = await Question.countDocuments();
-        const questionsWithAnswers = await Question.aggregate([
+        let questionsWithAnswers = await Question.aggregate([
             {
                 $match: {
                     isDeleted: false,
@@ -107,12 +112,21 @@ export const GET = async (req: Request, context: any) => {
             }, { status: 404 });
         }
 
+        if (sortByHotQuestions) {
+            questionsWithAnswers.sort((a, b) => b.likes.length - a.likes.length);
+        }
+
+        if (sortByNewest) {
+            questionsWithAnswers.sort((a, b) => b.createdAt - a.createdAt);
+        }
+
         return NextResponse.json({
             message: "Questions retrieved successfully.",
             data: questionsWithAnswers,
             totalRecords
         }, { status: 200 });
     } catch (error) {
+        console.log(error);
         return NextResponse.json({
             message: "Unknown error."
         }, { status: 500 });

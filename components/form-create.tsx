@@ -198,7 +198,7 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
     });
   };
 
-  if (!editQuestion) {
+  if (editId && !editQuestion) {
     return <NotFound />;
   }
 

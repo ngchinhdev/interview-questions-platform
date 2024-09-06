@@ -3,13 +3,13 @@ import FormCreate from "@components/form-create";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-interface ICreateQuestionProps {
+interface IFormQuestionProps {
   params: {
     slug: ["edit" | "create", string];
   };
 }
 
-const CreateQuestion = async ({ params }: ICreateQuestionProps) => {
+const FormQuestion = async ({ params }: IFormQuestionProps) => {
   const session = await getServerSession(authOptions);
 
   console.log(params);
@@ -40,4 +40,4 @@ const CreateQuestion = async ({ params }: ICreateQuestionProps) => {
   );
 };
 
-export default CreateQuestion;
+export default FormQuestion;

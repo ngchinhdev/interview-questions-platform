@@ -24,7 +24,7 @@ const PaginationCustom = ({ totalRecords }: IPaginationCustom) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window?.location.search);
   const offsetParam = params.get("offset");
   const limitParam = params.get("limit");
   let offset = offsetParam ? +offsetParam : 0;

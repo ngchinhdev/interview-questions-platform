@@ -1,17 +1,11 @@
 import ModalQuestionProvider from "@components/providers/modal-question-provider";
 import ModalQuestion from "@components/ui/customs/modal-question";
 import QuestionCard from "@components/ui/customs/question-card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { getQuestions } from "@services/question";
 import Search from "@components/ui/customs/search";
 import FilterProvider from "@components/providers/filter-provider";
 import PaginationCustom from "@components/ui/customs/pagination-custom";
+import SortBy from "@components/ui/customs/sortby";
 
 interface IQuestionList {
   params: { slug: string };
@@ -36,19 +30,7 @@ const QuestionList = async ({ params, searchParams }: IQuestionList) => {
           </h1>
           <Search />
           <div className="mt-5 flex items-center justify-end">
-            <Select>
-              <SelectTrigger className="h-[35px] w-[110px] outline-none focus:ring-0">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="questionAsc">Question ascending</SelectItem>
-                <SelectItem value="questionDesc">
-                  Question descending
-                </SelectItem>
-                <SelectItem value="dateAsc">Date ascending</SelectItem>
-                <SelectItem value="dateDesc">Date descending</SelectItem>
-              </SelectContent>
-            </Select>
+            <SortBy />
           </div>
           {isEmpty ? (
             <div>No questions found.</div>
