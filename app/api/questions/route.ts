@@ -95,11 +95,23 @@ export const GET = async (req: Request, context: any) => {
                 }
             },
             {
+                $addFields: {
+                    likesCount: {
+                        $size: "$likes"
+                    }
+                }
+            },
+            ...(sortByHotQuestions ?
+                [{ $sort: { likesCount: -1 as 1 | -1 } }] :
+                sortByNewest ?
+                    [{ $sort: { createdAt: -1 as 1 | -1 } }] :
+                    []),
+            {
                 $skip: +offset
             },
             {
                 $limit: +limit
-            }
+            },
         ]);
 
         if (search || tag) {
@@ -110,14 +122,6 @@ export const GET = async (req: Request, context: any) => {
             return NextResponse.json({
                 message: "No questions found."
             }, { status: 404 });
-        }
-
-        if (sortByHotQuestions) {
-            questionsWithAnswers.sort((a, b) => b.likes.length - a.likes.length);
-        }
-
-        if (sortByNewest) {
-            questionsWithAnswers.sort((a, b) => b.createdAt - a.createdAt);
         }
 
         return NextResponse.json({

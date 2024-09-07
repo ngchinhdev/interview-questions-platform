@@ -10,6 +10,7 @@ import Footer from "@components/footer";
 import { ReactQueryProvider } from "@components/providers/react-query-provider";
 import Header from "@components/header";
 import SSProvider from "@components/providers/session-provider";
+import { getMessages } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Interview Questions Platform",
@@ -25,6 +26,8 @@ const RootLayout = async ({
     locale: string;
   };
 }) => {
+  const messages = await getMessages();
+
   return (
     <html lang={locale} suppressHydrationWarning={true}>
       <body className="!pointer-events-auto">
@@ -34,7 +37,7 @@ const RootLayout = async ({
           enableSystem
           disableTransitionOnChange
         >
-          <NextIntlClientProvider locale={locale}>
+          <NextIntlClientProvider locale={locale} messages={messages}>
             <SSProvider>
               <ReactQueryProvider>
                 <div className="sticky top-0 z-50 w-full border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

@@ -1,5 +1,6 @@
 {
-  "About": {
-    "title": "About us"
+  "homePage": {
+    "mainTitleAbove": "Học hỏi & Chia sẻ",
+    "mainTitleUnder": "Interview Knowledge and Experience"
   }
 }

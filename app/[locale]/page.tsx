@@ -6,6 +6,7 @@ import Search from "@components/ui/customs/search";
 import FilterProvider from "@components/providers/filter-provider";
 import PaginationCustom from "@components/ui/customs/pagination-custom";
 import SortBy from "@components/ui/customs/sortby";
+import MainTitle from "@components/ui/customs/main-title";
 
 interface IQuestionList {
   params: { slug: string };
@@ -23,11 +24,7 @@ const QuestionList = async ({ params, searchParams }: IQuestionList) => {
     <>
       <ModalQuestionProvider>
         <FilterProvider>
-          <h1 className="mx-auto mt-8 w-[80%] scroll-m-20 text-center text-3xl font-extrabold tracking-tight lg:text-4xl">
-            Explore & Share
-            <br />
-            Interview Knowledge and Experience
-          </h1>
+          <MainTitle />
           <Search />
           <div className="mt-5 flex items-center justify-end">
             <SortBy />

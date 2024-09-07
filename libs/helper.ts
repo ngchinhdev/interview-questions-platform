@@ -12,13 +12,26 @@ export const checkValidExistID = async (id: string, model: Model<any>) => {
     }
 };
 
+export const getPaginationQuery = () => {
+    const params = new URLSearchParams(window?.location.search);
+    const offsetParam = params.get("offset");
+    const limitParam = params.get("limit");
+    const offset = offsetParam ? +offsetParam : 0;
+    const limit = limitParam ? +limitParam : 9;
+    console.log(limit, offset);
+    const page = offset / limit + 1;
+
+    return { offset, limit, page };
+};
+
 export const updateSearchQuery = (
     page: number,
-    limit: number,
-    offset: number,
     searchParams: ReadonlyURLSearchParams,
     pathname: string,
+    sort?: string,
 ) => {
+    let { limit, offset } = getPaginationQuery();
+
     const currentParams = new URLSearchParams(
         Array.from(searchParams.entries()),
     );
@@ -27,6 +40,9 @@ export const updateSearchQuery = (
 
     currentParams.set("offset", offset.toString());
     currentParams.set("limit", limit.toString());
+    if (sort) {
+        currentParams.set("sort", sort.toString());
+    }
 
     const search = currentParams.toString();
     const query = search ? `?${search}` : "";

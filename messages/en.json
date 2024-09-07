@@ -1,5 +1,6 @@
 {
-  "About": {
-    "title": "About us"
+  "homePage": {
+    "mainTitleAbove": "Explore & Share",
+    "mainTitleUnder": "Interview Knowledge and Experience"
   }
 }

@@ -16,6 +16,9 @@ export const getQuestions = async (queryString: IQueryQuestionList) => {
         if (queryString.limit) {
             query += `&limit=${queryString.limit}`;
         }
+        if (queryString.sort) {
+            query += `&sort=${queryString.sort}`;
+        }
 
         const res = await fetch(
             `http://localhost:3000/api/questions?${query}`,

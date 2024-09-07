@@ -56,4 +56,5 @@ export interface IQueryQuestionList {
     search?: string;
     limit?: number;
     offset?: number;
+    sort?: string;
 }

@@ -33,7 +33,10 @@ export const authOptions: AuthOptions = {
                 if (!userExists) {
                     await User.create({
                         email: profile?.email,
-                        username: profile?.name?.replace(" ", "").toLowerCase(),
+                        username: profile?.name?.replace(" ", "")
+                            .toLowerCase()
+                            .normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, ""),
                         image: profile?.picture,
                     });
                 }
