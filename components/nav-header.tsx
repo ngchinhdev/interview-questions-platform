@@ -28,7 +28,7 @@ const NavHeader = () => {
       <>
         {session?.user && (
           <Button asChild variant="link">
-            <Link href="/create-question">Create Question</Link>
+            <Link href="/form/create">Create Question</Link>
           </Button>
         )}
         {session?.user ? (

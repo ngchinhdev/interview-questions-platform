@@ -37,8 +37,6 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
   const tagRef = useRef<HTMLInputElement>(null);
   const questionRef = useRef<HTMLTextAreaElement>(null);
   const answerRef = useRef<ITiptapRef>(null);
-  const router = useRouter();
-  const queryClient = useQueryClient();
 
   const { data: editQuestion } = useQuery({
     queryKey: ["question", editId],
@@ -127,7 +125,12 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
   }
 
   const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === " ") {
+    if (
+      e.key === "Enter" ||
+      e.key === " " ||
+      e.key === "," ||
+      e.key === "Tab"
+    ) {
       e.preventDefault();
       const newTag = tagRef.current?.value.trim();
       if (newTag && !tags.includes(newTag) && tags.length < 3) {

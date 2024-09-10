@@ -6,7 +6,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Answer from "./answer-item";
 import LoadingSpinner from "./loading-spinner";
@@ -14,7 +14,6 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import AnswerBox from "./answer-box";
 import { useSession } from "next-auth/react";
 import LoginButton from "./login-button";
-import { Button } from "../button";
 import { EllipsisVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -23,18 +22,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../dropdown-menu";
-import { getQuestionByID } from "@services/question";
-import { Link } from "@navigation/navigation";
+import { deleteQuestion, getQuestionByID } from "@services/question";
+import { Link, useRouter } from "@navigation/navigation";
 import { useEffect, useState } from "react";
 import { useModalQuestion } from "@hooks/useModalQuestion";
 
 const ModalQuestionAvailable = () => {
-  const [isOpenAnswerBox, setIsOpenAnswerBox] = useState(false);
+  const [idOpenBoxAnswer, setIdOpenBoxAnswer] = useState("");
   const { isOpen, onOpenChange, curId } = useModalQuestion();
   const { data: session } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    setIsOpenAnswerBox(false);
+    if (!isOpen) {
+      setIdOpenBoxAnswer("");
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    setIdOpenBoxAnswer("");
   }, [curId]);
 
   const {
@@ -46,6 +52,22 @@ const ModalQuestionAvailable = () => {
     queryKey: ["question", curId],
     queryFn: () => getQuestionByID(curId),
     enabled: !!curId,
+  });
+
+  const {
+    mutate: mutateDeleteQuestion,
+    data: deletedQuestion,
+    isPending: pendingDeleteQuestion,
+    isError: errorDeleteQuestion,
+  } = useMutation({
+    mutationFn: deleteQuestion,
+    onSuccess(data, variables, context) {
+      console.log(data);
+      router.refresh();
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
   });
 
   if (isError) {
@@ -76,7 +98,7 @@ const ModalQuestionAvailable = () => {
                 <div>
                   <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
                     <strong>{question.author.username}</strong>
-                    <span className="text-sm">&#x2022; 1 day ago</span>
+                    <span className="text-sm">&#x2022; &nbsp; 1 day ago</span>
                   </h6>
                   <strong className="text-lg leading-tight">
                     {question.title}
@@ -85,7 +107,9 @@ const ModalQuestionAvailable = () => {
                     question.answers?.every(
                       (a) => a.author._id !== session.user.id,
                     ) && (
-                      <p onClick={() => setIsOpenAnswerBox(true)}>Trả lời</p>
+                      <p onClick={() => setIdOpenBoxAnswer("tempID")}>
+                        Trả lời
+                      </p>
                     )}
                 </div>
               </div>
@@ -101,7 +125,11 @@ const ModalQuestionAvailable = () => {
                           <DropdownMenuItem>Edit</DropdownMenuItem>
                         </Link>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => mutateDeleteQuestion(question._id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
                       </>
                     ) : (
                       <DropdownMenuItem>Report</DropdownMenuItem>
@@ -114,17 +142,17 @@ const ModalQuestionAvailable = () => {
               {question.answers && question.answers.length
                 ? question.answers?.map((a) => (
                     <Answer
-                      onOpenAnswerBox={setIsOpenAnswerBox}
-                      isOpenAnswerBox={isOpenAnswerBox}
+                      onSetIdOpenBoxAnswer={setIdOpenBoxAnswer}
+                      idOpenBoxAnswer={idOpenBoxAnswer}
                       answer={a}
                       key={a._id}
                     />
                   ))
                 : "Chua ai tra loi"}
-              {isOpenAnswerBox &&
+              {idOpenBoxAnswer &&
                 !question.answers?.find(
                   (a) => a.author._id === session?.user.id,
-                ) && <AnswerBox onOpenAnswerBox={setIsOpenAnswerBox} />}
+                ) && <AnswerBox onSetIdOpenBoxAnswer={setIdOpenBoxAnswer} />}
               {!session?.user && (
                 <LoginButton>Đăng nhập để trả lời</LoginButton>
               )}

@@ -95,7 +95,6 @@ export const updateQuestion = async (updateQuestion: IUpdateQuestion) => {
     }
 };
 
-
 export const likeQuestion = async (likeData: IChangeLikeQuestion) => {
     try {
         const res = await fetch(
@@ -112,6 +111,24 @@ export const likeQuestion = async (likeData: IChangeLikeQuestion) => {
         );
 
         const data = await res.json();
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const deleteQuestion = async (questionID: string) => {
+    try {
+        const response = await fetch(
+            "http://localhost:3000/api/questions/delete/" + questionID,
+            {
+                method: "DELETE",
+
+            },
+        );
+
+        const data = await response.json();
+
         return data;
     } catch (error) {
         console.log(error);

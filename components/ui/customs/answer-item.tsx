@@ -10,21 +10,27 @@ import {
 } from "../dropdown-menu";
 import { EllipsisVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { IChangeLikeAnswer } from "@interfaces/answer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
 import AnswerBox from "./answer-box";
-import { dislikeQuestionApi, likeAnswerApi } from "@services/answer";
+import {
+  deleteAnswer,
+  dislikeQuestionApi,
+  likeAnswerApi,
+} from "@services/answer";
 import { useModalQuestion } from "@hooks/useModalQuestion";
 
 interface IAnswerProps {
   answer: IAnswer;
-  isOpenAnswerBox: boolean;
-  onOpenAnswerBox: (isOpen: boolean) => void;
+  idOpenBoxAnswer: string;
+  onSetIdOpenBoxAnswer: (id: string) => void;
 }
 
-const Answer = ({ answer, isOpenAnswerBox, onOpenAnswerBox }: IAnswerProps) => {
-  console.log(isOpenAnswerBox);
+const Answer = ({
+  answer,
+  idOpenBoxAnswer,
+  onSetIdOpenBoxAnswer,
+}: IAnswerProps) => {
+  console.log(idOpenBoxAnswer);
   const format = useFormatter();
   const { data: session } = useSession();
   const { curId } = useModalQuestion();
@@ -60,6 +66,24 @@ const Answer = ({ answer, isOpenAnswerBox, onOpenAnswerBox }: IAnswerProps) => {
         queryKey: ["question", curId],
       });
       console.log(data);
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
+  });
+
+  const {
+    mutate: mutateDeleteAnswer,
+    data: deletedQuestion,
+    isPending: pendingDeleteAnswer,
+    isError: errorDeleteAnswer,
+  } = useMutation({
+    mutationFn: deleteAnswer,
+    onSuccess(data, variables, context) {
+      console.log(data);
+      queryClient.invalidateQueries({
+        queryKey: ["question", curId],
+      });
     },
     onError(error, variables, context) {
       console.log(error);
@@ -110,8 +134,11 @@ const Answer = ({ answer, isOpenAnswerBox, onOpenAnswerBox }: IAnswerProps) => {
 
   return (
     <>
-      {isOpenAnswerBox && session?.user.id ? (
-        <AnswerBox existedAnswer={answer} onOpenAnswerBox={onOpenAnswerBox} />
+      {idOpenBoxAnswer === answer._id && session?.user.id ? (
+        <AnswerBox
+          existedAnswer={answer}
+          onSetIdOpenBoxAnswer={onSetIdOpenBoxAnswer}
+        />
       ) : (
         <div className="flex items-start gap-3">
           <Avatar className="mt-1 h-8 w-8">
@@ -124,7 +151,8 @@ const Answer = ({ answer, isOpenAnswerBox, onOpenAnswerBox }: IAnswerProps) => {
             <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
               <span>{answer.author.username}</span>
               <span className="text-sm">
-                &#x2022; {format.relativeTime(new Date(answer.createdAt))}
+                &#x2022; &nbsp;{" "}
+                {format.relativeTime(new Date(answer.createdAt))}
               </span>
             </h6>
             <p
@@ -168,11 +196,17 @@ const Answer = ({ answer, isOpenAnswerBox, onOpenAnswerBox }: IAnswerProps) => {
             <DropdownMenuContent align="end">
               {session?.user.id === answer.author._id ? (
                 <>
-                  <DropdownMenuItem onClick={() => onOpenAnswerBox(true)}>
+                  <DropdownMenuItem
+                    onClick={() => onSetIdOpenBoxAnswer(answer._id)}
+                  >
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Delete</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => mutateDeleteAnswer(answer._id)}
+                  >
+                    Delete
+                  </DropdownMenuItem>
                 </>
               ) : (
                 <DropdownMenuItem>Report</DropdownMenuItem>

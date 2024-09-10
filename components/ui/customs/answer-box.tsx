@@ -14,10 +14,13 @@ import { useRouter } from "@navigation/navigation";
 
 interface IAnswerBoxProps {
   existedAnswer?: IAnswer;
-  onOpenAnswerBox: (isOpen: boolean) => void;
+  onSetIdOpenBoxAnswer: (id: string) => void;
 }
 
-const AnswerBox = ({ existedAnswer, onOpenAnswerBox }: IAnswerBoxProps) => {
+const AnswerBox = ({
+  existedAnswer,
+  onSetIdOpenBoxAnswer,
+}: IAnswerBoxProps) => {
   const { data: session } = useSession();
   const { curId, onOpenChange, onChangeCurId } = useModalQuestion();
   const queryClient = useQueryClient();
@@ -36,7 +39,7 @@ const AnswerBox = ({ existedAnswer, onOpenAnswerBox }: IAnswerBoxProps) => {
       console.log(error);
     },
     onSettled(data, error, variables, context) {
-      onOpenAnswerBox(false);
+      onSetIdOpenBoxAnswer("");
       router.refresh();
     },
   });
@@ -48,13 +51,13 @@ const AnswerBox = ({ existedAnswer, onOpenAnswerBox }: IAnswerBoxProps) => {
       queryClient.invalidateQueries({
         queryKey: ["question", data.data.question],
       });
-      onOpenAnswerBox(false);
+      onSetIdOpenBoxAnswer("");
     },
     onError(error, variables, context) {
       console.log(error);
     },
     onSettled(data, error, variables, context) {
-      onOpenAnswerBox(false);
+      onSetIdOpenBoxAnswer("");
       router.refresh();
     },
   });

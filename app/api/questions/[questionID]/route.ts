@@ -23,7 +23,7 @@ export const GET = async (req: Request, context: any) => {
             });
 
         const answers = await Answer
-            .find({ question: questionID })
+            .find({ question: questionID, isDeleted: false })
             .populate({
                 path: 'author',
                 select: "username email image"
