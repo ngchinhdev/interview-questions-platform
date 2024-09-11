@@ -30,7 +30,7 @@ const QuestionList = async ({ params, searchParams }: IQuestionList) => {
             <SortBy />
           </div>
           {isEmpty ? (
-            <div>No questions found.</div>
+            <div className="py-10">Không tìm thấy câu hỏi nào.</div>
           ) : (
             <>
               <div className="mt-3 grid grid-cols-3 gap-6">

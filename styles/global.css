@@ -84,6 +84,7 @@
 
 .tiptap p {
   word-wrap: break-word;
+  width: 100%;
 }
 
 @layer base {

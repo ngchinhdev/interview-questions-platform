@@ -11,6 +11,8 @@ import { likeQuestion as likeQuestionApi } from "@services/question";
 import { useModalQuestion } from "@hooks/useModalQuestion";
 import { useFilter } from "@hooks/useFilter";
 import { usePathname, useRouter } from "@navigation/navigation";
+import { useToast } from "@hooks/useToast";
+import { cn } from "@libs/utils";
 
 interface IQuestionCardProps {
   questionData: IQuestionResponseData;
@@ -24,6 +26,7 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
   const { onSetSearchValue } = useFilter();
   const pathname = usePathname();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (session?.user && questionData.likes.length) {
@@ -83,73 +86,86 @@ const QuestionCard = ({ questionData }: IQuestionCardProps) => {
   };
 
   return (
-    <div className="relative rounded-lg border bg-background/95 px-4 py-3">
-      <div className="flex items-center gap-3">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={questionData.author.image} />
-          <AvatarFallback>
-            {questionData.author.username.slice(0, 2)}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h6 className="-mb-2 text-sm">{questionData.author.username}</h6>
-          <small className="text-xs">{questionData.author.email}</small>
+    <div className="relative flex flex-col justify-between rounded-lg border bg-background/95 px-4 py-3">
+      <div>
+        <div className="flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={questionData.author.image} />
+            <AvatarFallback>
+              {questionData.author.username.slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h6 className="-mb-2 text-sm">{questionData.author.username}</h6>
+            <small className="text-xs">{questionData.author.email}</small>
+          </div>
+        </div>
+        <h3 className="mt-1 flex items-start gap-2 leading-tight">
+          <span>❓</span>
+          <strong className="line-clamp-2">{questionData.title}</strong>
+        </h3>
+        <div className="mt-2 flex items-start gap-2 text-[15px] leading-tight">
+          <span>📋</span>
+          <div
+            className="line-clamp-4"
+            dangerouslySetInnerHTML={{
+              __html:
+                questionData?.answers && questionData.answers[0]?.content
+                  ? questionData.answers[0].content
+                  : "<p>Câu hỏi này hiện chưa có câu trả lời</p>",
+            }}
+          />
         </div>
       </div>
-      <h3 className="mt-1 flex items-start gap-2 leading-tight">
-        <span>❓</span>
-        <strong className="line-clamp-2">{questionData.title}</strong>
-      </h3>
-      <div className="mt-2 flex items-start gap-2 text-[15px] leading-tight">
-        <span>📋</span>
-        <div
-          className="line-clamp-4"
-          dangerouslySetInnerHTML={{
-            __html:
-              questionData?.answers && questionData.answers[0]?.content
-                ? questionData.answers[0].content
-                : "<p>Chưa có câu trả lời</p>",
-          }}
-        />
-      </div>
-      <span className="mt-2 block text-xs">
-        👉{" "}
-        <span className="cursor-pointer">
-          &nbsp;{" "}
-          <span
-            className="underline"
-            onClick={() => handleOpen(questionData._id)}
-          >
-            {questionData.answers && questionData.answers.length > 1
-              ? `và ${questionData.answers.length - 1} câu trả lời khác`
-              : "Xem chi tiết"}
+      <div>
+        <span className="mt-2 block text-xs">
+          👉{" "}
+          <span className="cursor-pointer">
+            &nbsp;{" "}
+            <span
+              className="underline"
+              onClick={() => handleOpen(questionData._id)}
+            >
+              {questionData.answers && questionData.answers.length > 1
+                ? `và ${questionData.answers.length - 1} câu trả lời khác`
+                : "Xem chi tiết"}
+            </span>
           </span>
         </span>
-      </span>
-      <div className="flex items-end justify-between text-[15px]">
-        <div className="mt-1 flex items-center gap-2">
-          {questionData.tags.map((tag) => (
-            <span
-              key={tag}
-              className="cursor-pointer"
-              onClick={() => handleClickTag(tag)}
-            >
-              #{tag}
+        <div className="flex items-end justify-between text-[15px]">
+          <div className="mt-1 flex items-center gap-2">
+            {questionData.tags.map((tag) => (
+              <span
+                key={tag}
+                className="cursor-pointer"
+                onClick={() => handleClickTag(tag)}
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+          <div className="flex items-end gap-1">
+            <span className="cursor-pointer leading-none">
+              {isLiked ? (
+                <span onClick={handleToggleLike}>💖</span>
+              ) : (
+                <FaRegHeart
+                  className="inline-block text-red-500"
+                  onClick={() =>
+                    session?.user
+                      ? handleToggleLike()
+                      : toast({
+                          title: "Bạn cần đăng nhập để tym 💖",
+                          className: cn(
+                            "top-0 right-0 flex fixed w-fit md:top-4 md:right-4",
+                          ),
+                        })
+                  }
+                />
+              )}{" "}
             </span>
-          ))}
-        </div>
-        <div className="flex items-end gap-1">
-          <span className="cursor-pointer leading-none">
-            {isLiked ? (
-              <span onClick={handleToggleLike}>💖</span>
-            ) : (
-              <FaRegHeart
-                className="inline-block text-red-500"
-                onClick={handleToggleLike}
-              />
-            )}{" "}
-          </span>
-          <span className="leading-none">{likes}</span>
+            <span className="leading-none">{likes}</span>
+          </div>
         </div>
       </div>
     </div>

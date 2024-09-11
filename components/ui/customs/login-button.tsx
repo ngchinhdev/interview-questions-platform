@@ -10,7 +10,13 @@ import {
 import React, { ReactNode, useEffect, useState } from "react";
 import { Button } from "../button";
 
-const LoginButton = ({ children }: { children: ReactNode }) => {
+const LoginButton = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   const [providers, setProviders] = useState<Record<
     LiteralUnion<BuiltInProviderType, string>,
     ClientSafeProvider
@@ -32,6 +38,7 @@ const LoginButton = ({ children }: { children: ReactNode }) => {
         key={provider.name}
         onClick={() => signIn(provider.id)}
         variant="outline"
+        className={className}
       >
         {children}
       </Button>

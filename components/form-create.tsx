@@ -95,10 +95,10 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
   });
 
   useEffect(() => {
-    if (newAnswer) {
+    if (newAnswer || newQuestion) {
       window.location.href = "/";
     }
-  }, [newAnswer]);
+  }, [newAnswer, newQuestion]);
 
   async function onSubmit() {
     if (!questionRef.current || !answerRef.current) {
@@ -106,7 +106,6 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
     }
 
     if (!session?.user || !questionRef.current.value || !tags.length) {
-      alert("Thieu");
       return;
     }
 
@@ -157,6 +156,15 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
   };
 
   const handleSetPreviewData = () => {
+    if (!questionRef.current || !answerRef.current) {
+      return;
+    }
+
+    if (!session?.user || !questionRef.current.value || !tags.length) {
+      alert("Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
+
     setStatePreview({
       isOpen: true,
       previewData: {
@@ -206,35 +214,45 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
   }
 
   return (
-    <div className="mt-5">
-      <div className="grid w-full gap-1.5">
-        <Label className="text-sm lg:text-lg" htmlFor="question">
-          Your question
+    <div className="mt-5 w-full">
+      <div className="w-full gap-1.5">
+        <Label
+          className="mb-1 inline-block text-sm lg:text-lg"
+          htmlFor="question"
+        >
+          Câu hỏi
         </Label>
         <Textarea
-          placeholder="Type your question here"
+          placeholder="Nhập câu hỏi ở đây"
           id="question"
           name="question"
           defaultValue={editQuestion?.title}
           ref={questionRef}
         />
       </div>
-      <div className="mt-3 grid w-full gap-1.5">
-        <Label className="text-sm lg:text-lg" htmlFor="answer">
-          Your answer <span className="text-sm font-normal">(Optional)</span>
+      <div className="mt-3 w-full gap-1.5">
+        <Label
+          className="mb-1 inline-block text-sm lg:text-lg"
+          htmlFor="answer"
+        >
+          Câu trả lời{" "}
+          <span className="text-sm font-normal">(Không bắt buộc)</span>
         </Label>
-        <Tiptap
-          ref={answerRef}
-          defaultValue={
-            editQuestion?.answers?.find(
-              (a) => a.author._id === session?.user.id,
-            )?.content
-          }
-        />
+        <div className="w-full">
+          <Tiptap
+            ref={answerRef}
+            defaultValue={
+              editQuestion?.answers?.find(
+                (a) => a.author._id === session?.user.id,
+              )?.content
+            }
+          />
+        </div>
       </div>
-      <div className="mt-3 grid w-full items-center gap-1.5">
-        <Label className="text-sm lg:text-lg" htmlFor="tag">
-          Tags <span className="text-sm font-normal">(#reactjs, #nextjs)</span>
+      <div className="mt-3 w-full items-center gap-1.5">
+        <Label className="mb-1 inline-block text-sm lg:text-lg" htmlFor="tag">
+          Nhãn{" "}
+          <span className="text-sm font-normal">(reactjs, nextjs, ...)</span>
         </Label>
         <div className="relative">
           <ul className="absolute left-0 top-0 flex h-10 w-full items-center gap-3 px-3">
@@ -270,7 +288,7 @@ const FormCreate = ({ editId }: IFormCreateProps) => {
           Reset
         </Button>
         <Button variant="default" onClick={handleSetPreviewData}>
-          {editId ? "Update" : "Create"}
+          {editId ? "Cập nhật" : "Thêm"}
         </Button>
         <ModalPreview
           isOpen={statePreview.isOpen}

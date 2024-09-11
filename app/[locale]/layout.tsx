@@ -11,6 +11,7 @@ import { ReactQueryProvider } from "@components/providers/react-query-provider";
 import Header from "@components/header";
 import SSProvider from "@components/providers/session-provider";
 import { getMessages } from "next-intl/server";
+import { Toaster } from "@components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Interview Questions Platform",
@@ -53,6 +54,7 @@ const RootLayout = async ({
             </SSProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

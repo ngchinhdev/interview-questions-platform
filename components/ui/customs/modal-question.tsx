@@ -26,12 +26,14 @@ import { deleteQuestion, getQuestionByID } from "@services/question";
 import { Link, useRouter } from "@navigation/navigation";
 import { useEffect, useState } from "react";
 import { useModalQuestion } from "@hooks/useModalQuestion";
+import { useFormatter } from "next-intl";
 
 const ModalQuestionAvailable = () => {
   const [idOpenBoxAnswer, setIdOpenBoxAnswer] = useState("");
   const { isOpen, onOpenChange, curId } = useModalQuestion();
   const { data: session } = useSession();
   const router = useRouter();
+  const format = useFormatter();
 
   useEffect(() => {
     if (!isOpen) {
@@ -63,12 +65,21 @@ const ModalQuestionAvailable = () => {
     mutationFn: deleteQuestion,
     onSuccess(data, variables, context) {
       console.log(data);
+      onOpenChange(false);
       router.refresh();
     },
     onError(error, variables, context) {
       console.log(error);
     },
   });
+
+  const handleDeleteQuestion = (questionID: string) => {
+    const confirm = window.confirm("Bạn chắc chắn muốn xóa?");
+
+    if (!confirm) return;
+
+    mutateDeleteQuestion(questionID);
+  };
 
   if (isError) {
     return <div>Error</div>;
@@ -84,7 +95,7 @@ const ModalQuestionAvailable = () => {
         {isLoading ? (
           <LoadingSpinner className="mx-auto" size={50} />
         ) : !question ? (
-          <div>Not found</div>
+          <div>Không tìm thấy</div>
         ) : (
           <div>
             <div className="flex w-full items-center justify-between">
@@ -98,7 +109,10 @@ const ModalQuestionAvailable = () => {
                 <div>
                   <h6 className="mb-1 flex items-center gap-5 text-base leading-none">
                     <strong>{question.author.username}</strong>
-                    <span className="text-sm">&#x2022; &nbsp; 1 day ago</span>
+                    <span className="text-sm">
+                      &#x2022; &nbsp;{" "}
+                      {format.relativeTime(new Date(question.createdAt))}
+                    </span>
                   </h6>
                   <strong className="text-lg leading-tight">
                     {question.title}
@@ -106,9 +120,16 @@ const ModalQuestionAvailable = () => {
                   {session?.user &&
                     question.answers?.every(
                       (a) => a.author._id !== session.user.id,
-                    ) && (
-                      <p onClick={() => setIdOpenBoxAnswer("tempID")}>
-                        Trả lời
+                    ) &&
+                    !idOpenBoxAnswer && (
+                      <p
+                        className="mt-1 flex items-center"
+                        onClick={() => setIdOpenBoxAnswer("tempID")}
+                      >
+                        ✍️{" "}
+                        <span className="cursor-pointer underline">
+                          Trả lời ngay
+                        </span>
                       </p>
                     )}
                 </div>
@@ -122,17 +143,21 @@ const ModalQuestionAvailable = () => {
                     {session?.user.id === question.author._id ? (
                       <>
                         <Link href={`/form/edit/${question._id}`}>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
                         </Link>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => mutateDeleteQuestion(question._id)}
+                          onClick={() => handleDeleteQuestion(question._id)}
                         >
-                          Delete
+                          Xóa
                         </DropdownMenuItem>
                       </>
                     ) : (
-                      <DropdownMenuItem>Report</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <LoginButton className="flex h-fit w-full justify-start !border-none bg-transparent !px-0 !py-0 hover:bg-transparent">
+                          Báo cáo
+                        </LoginButton>
+                      </DropdownMenuItem>
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -148,7 +173,7 @@ const ModalQuestionAvailable = () => {
                       key={a._id}
                     />
                   ))
-                : "Chua ai tra loi"}
+                : "Chưa có câu trả lời"}
               {idOpenBoxAnswer &&
                 !question.answers?.find(
                   (a) => a.author._id === session?.user.id,

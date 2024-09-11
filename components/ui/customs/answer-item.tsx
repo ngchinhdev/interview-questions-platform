@@ -18,6 +18,8 @@ import {
   likeAnswerApi,
 } from "@services/answer";
 import { useModalQuestion } from "@hooks/useModalQuestion";
+import { toast } from "@hooks/useToast";
+import { cn } from "@libs/utils";
 
 interface IAnswerProps {
   answer: IAnswer;
@@ -30,7 +32,6 @@ const Answer = ({
   idOpenBoxAnswer,
   onSetIdOpenBoxAnswer,
 }: IAnswerProps) => {
-  console.log(idOpenBoxAnswer);
   const format = useFormatter();
   const { data: session } = useSession();
   const { curId } = useModalQuestion();
@@ -90,9 +91,16 @@ const Answer = ({
     },
   });
 
+  const handleDeleteAnswer = (answerID: string) => {
+    const confirm = window.confirm("Bạn chắc chắn muốn xóa?");
+
+    if (!confirm) return;
+
+    mutateDeleteAnswer(answerID);
+  };
+
   const handleToggleLike = () => {
     if (!session?.user) {
-      console.log("Chua dang nhap");
       return;
     }
 
@@ -113,7 +121,6 @@ const Answer = ({
 
   const handleToggleDislike = () => {
     if (!session?.user) {
-      console.log("Chua dang nhap");
       return;
     }
 
@@ -166,7 +173,16 @@ const Answer = ({
             />
             <div className="mt-2">
               <button
-                onClick={handleToggleLike}
+                onClick={() =>
+                  session?.user
+                    ? handleToggleLike()
+                    : toast({
+                        title: "Bạn cần đăng nhập để like 👍",
+                        className: cn(
+                          "top-0 right-0 flex fixed w-fit md:top-4 md:right-4",
+                        ),
+                      })
+                }
                 className={`me-2 rounded-md border border-white px-2 py-1 text-xs transition-all ${
                   isAuthLiked
                     ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
@@ -177,7 +193,16 @@ const Answer = ({
                 <span>{answer.likes.length}</span>
               </button>
               <button
-                onClick={handleToggleDislike}
+                onClick={() =>
+                  session?.user
+                    ? handleToggleDislike()
+                    : toast({
+                        title: "Bạn cần đăng nhập để dislike 👎",
+                        className: cn(
+                          "top-0 right-0 flex fixed w-fit md:top-4 md:right-4",
+                        ),
+                      })
+                }
                 className={`rounded-md border border-white px-2 py-1 text-xs transition-all hover:bg-gray-800 ${
                   isAuthDisliked
                     ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
@@ -189,30 +214,32 @@ const Answer = ({
               </button>
             </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex flex-1 justify-end outline-none">
-              <EllipsisVertical className="cursor-pointer" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {session?.user.id === answer.author._id ? (
-                <>
-                  <DropdownMenuItem
-                    onClick={() => onSetIdOpenBoxAnswer(answer._id)}
-                  >
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => mutateDeleteAnswer(answer._id)}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <DropdownMenuItem>Report</DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex flex-1 justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="outline-none">
+                <EllipsisVertical className="cursor-pointer" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {session?.user.id === answer.author._id ? (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => onSetIdOpenBoxAnswer(answer._id)}
+                    >
+                      Chỉnh sửa
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => handleDeleteAnswer(answer._id)}
+                    >
+                      Xóa
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem>Báo cáo</DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       )}
     </>

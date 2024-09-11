@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
@@ -27,13 +27,13 @@ const Search = () => {
       <Input
         type="text"
         value={searchValue}
-        placeholder="Search questions by tag or username"
+        placeholder="Nhập tag hoặc câu hỏi để tìm kiếm"
         className="h-12 px-6"
         onChange={(e) => onSetSearchValue(e.target.value)}
         onKeyDown={(e) => (e.key === "Enter" ? handleSearch() : {})}
       />
       <Button variant="default" className="h-12 w-28" onClick={handleSearch}>
-        Search
+        Tìm kiếm
       </Button>
     </div>
   );

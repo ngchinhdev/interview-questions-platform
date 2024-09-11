@@ -93,7 +93,14 @@ const AnswerBox = ({
       </Avatar>
       <div className="mt-2 max-w-[660px] flex-1">
         <Tiptap ref={answerRef} defaultValue={existedAnswer?.content} />
-        <Button onClick={handleAddEditAnswer}>Hello</Button>
+        <div className="float-end mt-3">
+          <Button variant={"outline"} onClick={() => onSetIdOpenBoxAnswer("")}>
+            Hủy bỏ
+          </Button>
+          <Button onClick={handleAddEditAnswer} className="ml-3">
+            {existedAnswer ? "Cập nhật" : "Trả lời"}
+          </Button>
+        </div>
       </div>
     </div>
   );

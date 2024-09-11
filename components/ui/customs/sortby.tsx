@@ -26,12 +26,12 @@ const SortBy = () => {
 
   return (
     <Select onValueChange={(value) => handleSort(value)}>
-      <SelectTrigger className="h-[35px] w-[160px] outline-none focus:ring-0">
-        <SelectValue placeholder="Sort by" />
+      <SelectTrigger className="h-[35px] w-[130px] outline-none focus:ring-0">
+        <SelectValue placeholder="Lọc theo" />
       </SelectTrigger>
       <SelectContent align="end">
-        <SelectItem value="hot">Top questions</SelectItem>
-        <SelectItem value="newest">Newest first</SelectItem>
+        <SelectItem value="hot">Hot nhất</SelectItem>
+        <SelectItem value="newest">Mới nhất</SelectItem>
       </SelectContent>
     </Select>
   );

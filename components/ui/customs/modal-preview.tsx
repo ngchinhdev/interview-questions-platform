@@ -35,7 +35,7 @@ const ModalPreview = ({
       <DialogContent className="max-h-[90%] sm:max-w-[35%]">
         <DialogDescription></DialogDescription>
         <DialogTitle className="scroll-m-20 text-center text-3xl font-medium tracking-tight lg:text-2xl">
-          Your Question Will Be Seen Like This
+          Câu hỏi của bạn sẽ trông thế này
         </DialogTitle>
         <div className="pointer-events-none">
           <QuestionCard questionData={questionData} />
@@ -43,12 +43,12 @@ const ModalPreview = ({
         <div className="flex items-center justify-end">
           <DialogClose asChild>
             <Button variant="outline" className="me-3">
-              Cancel
+              Hủy
             </Button>
           </DialogClose>
 
           <Button variant="default" onClick={onSubmit}>
-            Agree
+            Đồng ý
           </Button>
         </div>
       </DialogContent>

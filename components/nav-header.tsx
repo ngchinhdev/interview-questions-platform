@@ -3,23 +3,19 @@
 import { signOut, useSession } from "next-auth/react";
 import { ModeToggle } from "@/components/ui/customs/toggle-mode";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import LoginButton from "./ui/customs/login-button";
-import { useLocale } from "next-intl";
 import { Link } from "@navigation/navigation";
 
 const NavHeader = () => {
   const { data: session } = useSession();
-  const locale = useLocale();
 
   return (
     <div className="flex items-center justify-between gap-3">
@@ -28,7 +24,7 @@ const NavHeader = () => {
       <>
         {session?.user && (
           <Button asChild variant="link">
-            <Link href="/form/create">Create Question</Link>
+            <Link href="/form/create">Tạo câu hỏi mới</Link>
           </Button>
         )}
         {session?.user ? (
@@ -40,15 +36,15 @@ const NavHeader = () => {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Hồ sơ</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut()}>
-                Logout
+                Đăng xuất
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <LoginButton>Login</LoginButton>
+          <LoginButton>Đăng nhập</LoginButton>
         )}
       </>
     </div>
