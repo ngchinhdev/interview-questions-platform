@@ -20,6 +20,7 @@ import {
 import { useModalQuestion } from "@hooks/useModalQuestion";
 import { toast } from "@hooks/useToast";
 import { cn } from "@libs/utils";
+import LoginButton from "./login-button";
 
 interface IAnswerProps {
   answer: IAnswer;
@@ -183,10 +184,10 @@ const Answer = ({
                         ),
                       })
                 }
-                className={`me-2 rounded-md border border-white px-2 py-1 text-xs transition-all ${
+                className={`me-2 rounded-md border border-slate-800 px-2 py-1 text-xs transition-all dark:border-white ${
                   isAuthLiked
-                    ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
-                    : "dark:hover:bg-red-800"
+                    ? "bg-slate-500 font-medium dark:bg-white dark:text-black dark:hover:bg-none"
+                    : "hover:bg-slate-500 dark:hover:bg-zinc-500"
                 }`}
               >
                 <span className="me-1">👍</span>
@@ -203,10 +204,10 @@ const Answer = ({
                         ),
                       })
                 }
-                className={`rounded-md border border-white px-2 py-1 text-xs transition-all hover:bg-gray-800 ${
+                className={`rounded-md border border-slate-800 px-2 py-1 text-xs transition-all hover:bg-gray-800 dark:border-white ${
                   isAuthDisliked
-                    ? "font-medium dark:bg-white dark:text-black dark:hover:bg-none"
-                    : "dark:hover:bg-red-800"
+                    ? "bg-slate-500 font-medium dark:bg-white dark:text-black dark:hover:bg-none"
+                    : "hover:bg-slate-500 dark:hover:bg-zinc-500"
                 }`}
               >
                 <span className="me-1">👎</span>
@@ -235,7 +236,15 @@ const Answer = ({
                     </DropdownMenuItem>
                   </>
                 ) : (
-                  <DropdownMenuItem>Báo cáo</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    {session?.user.id ? (
+                      <span>Báo cáo</span>
+                    ) : (
+                      <LoginButton className="flex h-fit w-full justify-start !border-none bg-transparent !px-0 !py-0 hover:bg-transparent">
+                        Báo cáo
+                      </LoginButton>
+                    )}
+                  </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>

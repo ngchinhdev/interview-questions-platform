@@ -1,5 +1,6 @@
 import { authOptions } from "@app/api/auth/[...nextauth]/route";
 import FormCreate from "@components/form-create";
+import FormCreateSkeleton from "@components/skeletons/form-create-skeleton";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import { redirect } from "next/navigation";

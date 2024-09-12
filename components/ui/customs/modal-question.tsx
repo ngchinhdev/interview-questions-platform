@@ -153,10 +153,14 @@ const ModalQuestionAvailable = () => {
                         </DropdownMenuItem>
                       </>
                     ) : (
-                      <DropdownMenuItem>
-                        <LoginButton className="flex h-fit w-full justify-start !border-none bg-transparent !px-0 !py-0 hover:bg-transparent">
-                          Báo cáo
-                        </LoginButton>
+                      <DropdownMenuItem className="cursor-pointer">
+                        {session?.user.id ? (
+                          <span>Báo cáo</span>
+                        ) : (
+                          <LoginButton className="flex h-fit w-full justify-start !border-none bg-transparent !px-0 !py-0 hover:bg-transparent">
+                            Báo cáo
+                          </LoginButton>
+                        )}
                       </DropdownMenuItem>
                     )}
                   </DropdownMenuContent>

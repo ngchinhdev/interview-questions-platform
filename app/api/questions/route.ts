@@ -25,7 +25,7 @@ export const GET = async (req: Request, context: any) => {
 
     try {
         await connectToDB();
-        let totalRecords = await Question.countDocuments();
+        let totalRecords = await Question.countDocuments({ isDeleted: false });
         let questionsWithAnswers = await Question.aggregate([
             {
                 $match: {
